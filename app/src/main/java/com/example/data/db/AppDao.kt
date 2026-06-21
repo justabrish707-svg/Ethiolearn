@@ -10,6 +10,7 @@ import com.example.data.model.Grade
 import com.example.data.model.Lesson
 import com.example.data.model.PracticeQuestion
 import com.example.data.model.Progress
+import com.example.data.model.QuizQuestion
 import com.example.data.model.Subject
 import com.example.data.model.Topic
 import com.example.data.model.UnitTable
@@ -29,6 +30,9 @@ interface AppDao {
     @Query("SELECT * FROM topics WHERE unit_id = :unitId")
     fun getTopicsByUnit(unitId: Int): Flow<List<Topic>>
 
+    @Query("SELECT topics.* FROM topics INNER JOIN units ON topics.unit_id = units.id WHERE topics.title LIKE '%' || :query || '%' OR topics.section LIKE '%' || :query || '%' OR units.title LIKE '%' || :query || '%'")
+    fun searchTopics(query: String): Flow<List<Topic>>
+
     @Query("SELECT * FROM topics WHERE id = :topicId LIMIT 1")
     suspend fun getTopicById(topicId: Int): Topic?
 
@@ -44,8 +48,14 @@ interface AppDao {
     @Query("SELECT * FROM practice_questions WHERE topic_id = :topicId")
     fun getPracticeQuestionsByTopic(topicId: Int): Flow<List<PracticeQuestion>>
 
+    @Query("SELECT * FROM quiz_questions WHERE topic_id = :topicId")
+    fun getQuizQuestionsByTopic(topicId: Int): Flow<List<QuizQuestion>>
+
     @Query("SELECT * FROM progress WHERE topic_id = :topicId LIMIT 1")
     fun getProgressByTopic(topicId: Int): Flow<Progress?>
+
+    @Query("SELECT * FROM progress")
+    fun getAllProgress(): Flow<List<Progress>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertProgress(progress: Progress)
@@ -71,6 +81,9 @@ interface AppDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPracticeQuestions(questions: List<PracticeQuestion>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertQuizQuestions(questions: List<QuizQuestion>)
     
     @Query("SELECT COUNT(*) FROM grades")
     suspend fun countGrades(): Int

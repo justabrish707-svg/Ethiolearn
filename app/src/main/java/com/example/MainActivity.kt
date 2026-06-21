@@ -39,9 +39,15 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding)
                     ) {
                         composable("home") {
-                            HomeScreen(viewModel, onNavigateToGrade = { gradeId ->
-                                navController.navigate("subjects/$gradeId")
-                            })
+                            HomeScreen(
+                                viewModel = viewModel, 
+                                onNavigateToGrade = { gradeId ->
+                                    navController.navigate("subjects/$gradeId")
+                                },
+                                onNavigateToLesson = { topicId ->
+                                    navController.navigate("lesson/$topicId")
+                                }
+                            )
                         }
                         composable(
                             "subjects/{gradeId}",

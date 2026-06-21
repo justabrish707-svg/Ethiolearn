@@ -9,6 +9,7 @@ import com.example.data.model.Grade
 import com.example.data.model.Lesson
 import com.example.data.model.PracticeQuestion
 import com.example.data.model.Progress
+import com.example.data.model.QuizQuestion
 import com.example.data.model.Subject
 import com.example.data.model.Topic
 import com.example.data.model.UnitTable
@@ -22,9 +23,10 @@ import com.example.data.model.UnitTable
         Lesson::class,
         Example::class,
         PracticeQuestion::class,
+        QuizQuestion::class,
         Progress::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

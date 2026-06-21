@@ -34,6 +34,18 @@ class MainViewModel(private val repository: AppRepository) : ViewModel() {
     private val _examples = MutableStateFlow<List<Example>>(emptyList())
     val examples = _examples.asStateFlow()
 
+    private val _quizQuestions = MutableStateFlow<List<QuizQuestion>>(emptyList())
+    val quizQuestions = _quizQuestions.asStateFlow()
+
+    private val _topicProgress = MutableStateFlow<Progress?>(null)
+    val topicProgress = _topicProgress.asStateFlow()
+
+    private val _allProgress = MutableStateFlow<List<Progress>>(emptyList())
+    val allProgress = _allProgress.asStateFlow()
+
+    private val _searchResults = MutableStateFlow<List<Topic>>(emptyList())
+    val searchResults = _searchResults.asStateFlow()
+
     init {
         viewModelScope.launch {
             repository.initializePrepopulatedData()
@@ -87,6 +99,64 @@ class MainViewModel(private val repository: AppRepository) : ViewModel() {
         viewModelScope.launch {
             repository.getPracticeQuestionsByTopic(topicId).collectLatest {
                 _practiceQuestions.value = it
+            }
+        }
+    }
+
+    fun loadQuizQuestions(topicId: Int) {
+        viewModelScope.launch {
+            repository.getQuizQuestionsByTopic(topicId).collectLatest {
+                _quizQuestions.value = it
+            }
+        }
+    }
+
+    fun loadProgress(topicId: Int) {
+        viewModelScope.launch {
+            repository.getProgressByTopic(topicId).collectLatest {
+                _topicProgress.value = it
+            }
+        }
+    }
+
+    fun loadAllProgress() {
+        viewModelScope.launch {
+            repository.getAllProgress().collectLatest {
+                _allProgress.value = it
+            }
+        }
+    }
+
+    fun search(query: String) {
+        viewModelScope.launch {
+            if (query.trim().isEmpty()) {
+                _searchResults.value = emptyList()
+            } else {
+                repository.searchTopics(query).collectLatest {
+                    _searchResults.value = it
+                }
+            }
+        }
+    }
+
+    fun markLessonCompleted(topicId: Int) {
+        viewModelScope.launch {
+            val current = _topicProgress.value
+            if (current == null) {
+                repository.updateProgress(Progress(topic_id = topicId, completed_lessons = true))
+            } else {
+                repository.updateProgress(current.copy(completed_lessons = true))
+            }
+        }
+    }
+
+    fun submitQuizScore(topicId: Int, score: Int) {
+        viewModelScope.launch {
+            val current = _topicProgress.value
+            if (current == null) {
+                repository.updateProgress(Progress(topic_id = topicId, quiz_score = score))
+            } else if (score > current.quiz_score) {
+                repository.updateProgress(current.copy(quiz_score = score))
             }
         }
     }

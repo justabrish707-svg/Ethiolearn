@@ -64,6 +64,7 @@ data class UnitTable(
 data class Topic(
     @PrimaryKey val id: Int,
     val unit_id: Int,
+    val section: String = "",
     val title: String
 )
 
@@ -126,6 +127,26 @@ data class PracticeQuestion(
     val question: String,
     val correct_answer: String,
     val explanation: String
+)
+
+@Entity(
+    tableName = "quiz_questions",
+    foreignKeys = [
+        ForeignKey(
+            entity = Topic::class,
+            parentColumns = ["id"],
+            childColumns = ["topic_id"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
+)
+@Serializable
+data class QuizQuestion(
+    @PrimaryKey val id: Int,
+    val topic_id: Int,
+    val question: String,
+    val options_json: String,
+    val correct_option_index: Int
 )
 
 @Entity(
