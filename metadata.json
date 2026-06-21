@@ -1,0 +1,6 @@
+{
+  "name": "EthioLearn",
+  "description": "Offline-first educational app for Ethiopian students.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
