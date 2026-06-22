@@ -168,3 +168,14 @@ data class Progress(
     val quiz_score: Int = 0,
     val timestamp: Long = System.currentTimeMillis()
 )
+
+@androidx.room.Fts4
+@Entity(tableName = "curriculum_search_fts")
+data class CurriculumSearchFts(
+    @androidx.room.PrimaryKey val rowid: Int,
+    val topic_id: Int,
+    val topic_title: String,
+    val section: String,
+    val unit_title: String
+)
+

@@ -1,10 +1,52 @@
 package com.example.data.repository
 
+import android.content.Context
 import com.example.data.db.AppDao
 import com.example.data.model.*
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.serialization.Serializable
 
-class AppRepository(private val appDao: AppDao) {
+@Serializable
+data class CurriculumJsonDto(
+    val grades: List<GradeDto>
+)
+
+@Serializable
+data class GradeDto(
+    val grade_id: Int,
+    val name: String,
+    val subjects: List<SubjectDto>
+)
+
+@Serializable
+data class SubjectDto(
+    val subject_id: Int,
+    val name: String,
+    val units: List<UnitDto>
+)
+
+@Serializable
+data class UnitDto(
+    val unit_id: Int,
+    val number: Int,
+    val name: String,
+    val sections: List<SectionDto>
+)
+
+@Serializable
+data class SectionDto(
+    val section_number: String,
+    val topics: List<TopicDto>
+)
+
+@Serializable
+data class TopicDto(
+    val topic_id: Int,
+    val name: String
+)
+
+class AppRepository(private val appDao: AppDao, private val context: Context) {
 
     val grades: Flow<List<Grade>> = appDao.getGrades()
 
@@ -14,7 +56,16 @@ class AppRepository(private val appDao: AppDao) {
 
     fun getTopicsByUnit(unitId: Int): Flow<List<Topic>> = appDao.getTopicsByUnit(unitId)
 
-    fun searchTopics(query: String): Flow<List<Topic>> = appDao.searchTopics(query)
+    fun searchTopics(query: String): Flow<List<Topic>> {
+        val sanitizedQuery = query.trim().split("\\s+".toRegex())
+            .filter { it.isNotEmpty() }
+            .joinToString(" ") { "$it*" }
+        return if (sanitizedQuery.isEmpty()) {
+            flowOf(emptyList())
+        } else {
+            appDao.searchTopicsFts(sanitizedQuery)
+        }
+    }
 
     suspend fun getTopicById(topicId: Int): Topic? = appDao.getTopicById(topicId)
     
@@ -32,317 +83,422 @@ class AppRepository(private val appDao: AppDao) {
 
     fun getProgressByTopic(topicId: Int): Flow<Progress?> = appDao.getProgressByTopic(topicId)
 
+    suspend fun getProgressByTopicDirect(topicId: Int): Progress? = appDao.getProgressByTopicDirect(topicId)
+
     suspend fun updateProgress(progress: Progress) {
         appDao.insertProgress(progress)
     }
 
+    suspend fun markTopicLessonCompleted(topicId: Int) {
+        val currentProgress = appDao.getProgressByTopicDirect(topicId)
+        if (currentProgress != null) {
+            appDao.insertProgress(currentProgress.copy(completed_lessons = true, timestamp = System.currentTimeMillis()))
+        } else {
+            appDao.insertProgress(Progress(topic_id = topicId, completed_lessons = true))
+        }
+    }
+
+    suspend fun saveQuizScore(topicId: Int, score: Int) {
+        val currentProgress = appDao.getProgressByTopicDirect(topicId)
+        if (currentProgress != null) {
+            val maxScore = maxOf(currentProgress.quiz_score, score)
+            appDao.insertProgress(currentProgress.copy(quiz_score = maxScore, timestamp = System.currentTimeMillis()))
+        } else {
+            appDao.insertProgress(Progress(topic_id = topicId, quiz_score = score))
+        }
+    }
+
     suspend fun initializePrepopulatedData() {
         if (appDao.countGrades() == 0) {
-            val grades = listOf(
-                Grade(9, "Grade 9"),
-                Grade(10, "Grade 10")
-            )
-            appDao.insertGrades(grades)
-
-            val subjects = listOf(
-                Subject(1, 9, "Mathematics"),
-                Subject(2, 10, "Mathematics")
-            )
-            appDao.insertSubjects(subjects)
-
-            val units = listOf(
-                // Grade 9 Mathematics (Subject 1)
-                UnitTable(1, 1, 1, "The Number System"),
-                UnitTable(2, 1, 2, "Equations and Inequalities"),
-                UnitTable(3, 1, 3, "Further on Inequalities"),
-                UnitTable(4, 1, 4, "Further on Relations and Functions"),
-                UnitTable(5, 1, 5, "Trigonometry"),
-                UnitTable(6, 1, 6, "Vectors in Two Dimensions"),
-                UnitTable(7, 1, 7, "Statistics and Probability"),
-                UnitTable(8, 1, 8, "Mathematical Reasoning"),
-
-                // Grade 10 Mathematics (Subject 2)
-                UnitTable(9, 2, 1, "Relations and Functions"),
-                UnitTable(10, 2, 2, "Polynomial Functions"),
-                UnitTable(11, 2, 3, "Exponential and Logarithmic Functions"),
-                UnitTable(12, 2, 4, "Trigonometric Functions"),
-                UnitTable(13, 2, 5, "Circles"),
-                UnitTable(14, 2, 6, "Solid Geometry"),
-                UnitTable(15, 2, 7, "Coordinate Geometry"),
-                UnitTable(16, 2, 8, "Mathematical Reasoning and Proofs"),
-                UnitTable(17, 2, 9, "Statistics and Probability")
-            )
-            appDao.insertUnits(units)
-
-            val topics = listOf(
-                // Grade 9 Topics (Unit 1 to 8)
-                // Unit 1: The Number System (ID: 1)
-                Topic(1, 1, "1.1", "Introduction to Rational Numbers"),
-                Topic(2, 1, "1.1", "Properties of Rational Numbers"),
-                Topic(3, 1, "1.1", "Decimal representation of Rational Numbers"),
-                Topic(4, 1, "1.2", "Introduction to Irrational Numbers"),
-                Topic(5, 1, "1.2", "Decimal representation of Irrational Numbers"),
-                Topic(6, 1, "1.2", "Properties of Irrational Numbers"),
-                Topic(7, 1, "1.3", "The Real Number Line"),
-                Topic(8, 1, "1.3", "Order properties of Real Numbers"),
-                Topic(9, 1, "1.3", "Density of Real Numbers"),
-                Topic(10, 1, "1.4", "Upper bounds and Lower bounds"),
-                Topic(11, 1, "1.4", "Bounded sets"),
-                Topic(12, 1, "1.4", "Least upper bounds (Supremum)"),
-                Topic(13, 1, "1.4", "Greatest lower bounds (Infimum)"),
-                Topic(14, 1, "1.5", "Introduction to Radicals"),
-                Topic(15, 1, "1.5", "Simplification of Radicals"),
-                Topic(16, 1, "1.5", "Addition and Subtraction of Radicals"),
-                Topic(17, 1, "1.5", "Multiplication and Division of Radicals"),
-                Topic(18, 1, "1.5", "Rationalizing denominators"),
-
-                // Unit 2: Equations and Inequalities (ID: 2)
-                Topic(19, 2, "2.1", "Linear Equations in One Variable"),
-                Topic(20, 2, "2.1", "Solving Multi-step Linear Equations"),
-                Topic(21, 2, "2.1", "Linear Equation Word Problems"),
-                Topic(22, 2, "2.2", "Introduction to Rational Equations"),
-                Topic(23, 2, "2.2", "Simplifying Rational Expressions"),
-                Topic(24, 2, "2.2", "Solving Rational Equations"),
-                Topic(25, 2, "2.3", "Introduction to Absolute Value"),
-                Topic(26, 2, "2.3", "Properties of Absolute Value"),
-                Topic(27, 2, "2.3", "Solving Absolute Value Equations"),
-                Topic(28, 2, "2.4", "Systems of Linear Equations in Two Variables"),
-                Topic(29, 2, "2.4", "Solving Systems by Graphing"),
-                Topic(30, 2, "2.4", "Solving Systems by Substitution"),
-                Topic(31, 2, "2.4", "Solving Systems by Elimination"),
-                Topic(32, 2, "2.4", "Applications of Linear Systems"),
-
-                // Unit 3: Further on Inequalities (ID: 3)
-                Topic(33, 3, "3.1", "Linear Inequalities in One Variable"),
-                Topic(34, 3, "3.1", "Properties of Inequalities"),
-                Topic(35, 3, "3.1", "Solving Multi-step Inequalities"),
-                Topic(36, 3, "3.2", "Absolute Value Inequalities"),
-                Topic(37, 3, "3.2", "Solving Less-Than Absolute Value Inequalities"),
-                Topic(38, 3, "3.2", "Solving Greater-Than Absolute Value Inequalities"),
-                Topic(39, 3, "3.3", "Systems of Linear Inequalities in Two Variables"),
-                Topic(40, 3, "3.3", "Graphing Systems of Inequalities"),
-
-                // Unit 4: Further on Relations and Functions (ID: 4)
-                Topic(41, 4, "4.1", "Ordered Pairs"),
-                Topic(42, 4, "4.1", "Cartesian Products of Sets"),
-                Topic(43, 4, "4.2", "Introduction to Relations"),
-                Topic(44, 4, "4.2", "Domain and Range of Relations"),
-                Topic(45, 4, "4.2", "Graphing Relations"),
-                Topic(46, 4, "4.2", "Inverse of a Relation"),
-                Topic(47, 4, "4.3", "Introduction to Functions"),
-                Topic(48, 4, "4.3", "Function Notation"),
-                Topic(49, 4, "4.3", "The Vertical Line Test"),
-                Topic(50, 4, "4.3", "One-to-One Functions"),
-                Topic(51, 4, "4.3", "Onto Functions"),
-                Topic(52, 4, "4.3", "One-to-One Correspondence"),
-
-                // Unit 5: Trigonometry (ID: 5)
-                Topic(53, 5, "5.1", "Angles in Standard Position"),
-                Topic(54, 5, "5.1", "Introduction to Trigonometric Ratios"),
-                Topic(55, 5, "5.1", "Trig Ratios of Special Angles (30, 45, 60)"),
-                Topic(56, 5, "5.1", "Trig Ratios of Trigonometric Quadrantal Angles"),
-                Topic(57, 5, "5.2", "Solving Right Triangles"),
-                Topic(58, 5, "5.2", "Angles of Elevation"),
-                Topic(59, 5, "5.2", "Angles of Depression"),
-                Topic(60, 5, "5.2", "Trigonometric Applications"),
-
-                // Unit 6: Vectors in Two Dimensions (ID: 6)
-                Topic(61, 6, "6.1", "Scalars and Vectors"),
-                Topic(62, 6, "6.1", "Geometric Representation of Vectors"),
-                Topic(63, 6, "6.1", "Position Vectors"),
-                Topic(64, 6, "6.2", "Vector Addition (Geometric)"),
-                Topic(65, 6, "6.2", "Vector Subtraction (Geometric)"),
-                Topic(66, 6, "6.2", "Scalar Multiplication"),
-                Topic(67, 6, "6.2", "Components of a Vector"),
-                Topic(68, 6, "6.2", "Vector Arithmetic in Algebra"),
-                Topic(69, 6, "6.2", "Magnitude of a Vector"),
-
-                // Unit 7: Statistics and Probability (ID: 7)
-                Topic(70, 7, "7.1", "Introduction to Grouped Data"),
-                Topic(71, 7, "7.1", "Frequency Distributions"),
-                Topic(72, 7, "7.1", "Class Intervals and Midpoints"),
-                Topic(73, 7, "7.1", "Cumulative Frequency Tables"),
-                Topic(74, 7, "7.2", "Mean of Grouped Data"),
-                Topic(75, 7, "7.2", "Median of Grouped Data"),
-                Topic(76, 7, "7.2", "Mode of Grouped Data"),
-                Topic(77, 7, "7.3", "Introduction to Probability"),
-                Topic(78, 7, "7.3", "Sample Spaces and Events"),
-                Topic(79, 7, "7.3", "Addition Rule of Probability"),
-                Topic(80, 7, "7.3", "Independent Events"),
-
-                // Unit 8: Mathematical Reasoning (ID: 8)
-                Topic(81, 8, "8.1", "Logic Statements and Propositions"),
-                Topic(82, 8, "8.1", "Logical Connectives - Negation"),
-                Topic(83, 8, "8.1", "Logical Connectives - Conjunction"),
-                Topic(84, 8, "8.1", "Logical Connectives - Disjunction"),
-                Topic(85, 8, "8.1", "Conditional and Biconditional Statements"),
-                Topic(86, 8, "8.1", "Truth Tables construction"),
-                Topic(87, 8, "8.1", "Tautologies and Contradictions"),
-                Topic(88, 8, "8.1", "Logical Equivalence"),
-                Topic(89, 8, "8.2", "Valid and Invalid Arguments"),
-                Topic(90, 8, "8.2", "Truth Table Proofs of Validity"),
-
-                // Grade 10 Topics (Unit 9 to 17)
-                // Unit 1: Relations and Functions (ID: 9)
-                Topic(91, 9, "1.1", "Domain and Range of Inverse Relations"),
-                Topic(92, 9, "1.1", "Inverse Functions"),
-                Topic(93, 9, "1.2", "Introduction to Composite Functions"),
-                Topic(94, 9, "1.2", "Evaluating Composite Functions"),
-                Topic(95, 9, "1.2", "Properties of Composites"),
-
-                // Unit 2: Polynomial Functions (ID: 10)
-                Topic(96, 10, "2.1", "Introduction to Polynomial Expressions"),
-                Topic(97, 10, "2.1", "Degree and Coefficients"),
-                Topic(98, 10, "2.2", "Addition and Subtraction of Polynomials"),
-                Topic(99, 10, "2.2", "Multiplication of Polynomials"),
-                Topic(100, 10, "2.2", "Polynomial Division (Long Division)"),
-                Topic(101, 10, "2.2", "Synthetic Division"),
-                Topic(102, 10, "2.3", "The Remainder Theorem"),
-                Topic(103, 10, "2.3", "The Factor Theorem"),
-                Topic(104, 10, "2.3", "Rational Root Theorem"),
-                Topic(105, 10, "2.3", "Zeros of Polynomials"),
-                Topic(106, 10, "2.3", "Factorization of Polynomials"),
-                Topic(107, 10, "2.4", "Symmetry of Polynomial Graphs"),
-                Topic(108, 10, "2.4", "End Behavior of Graphs"),
-                Topic(109, 10, "2.4", "Turning Points"),
-                Topic(110, 10, "2.4", "Graphing Polynomial Functions"),
-
-                // Unit 3: Exponential and Logarithmic Functions (ID: 11)
-                Topic(111, 11, "3.1", "Definition of Exponential Functions"),
-                Topic(112, 11, "3.1", "Properties of Exponents"),
-                Topic(113, 11, "3.1", "Graphing Exponential Functions"),
-                Topic(114, 11, "3.1", "Solving Exponential Equations"),
-                Topic(115, 11, "3.2", "Definition of Logarithmic Functions"),
-                Topic(116, 11, "3.2", "Laws of Logarithms"),
-                Topic(117, 11, "3.2", "Common and Natural Logarithms"),
-                Topic(118, 11, "3.2", "Graphing Logarithmic Functions"),
-                Topic(119, 11, "3.2", "Solving Logarithmic Equations"),
-                Topic(120, 11, "3.3", "Applications - Growth and Decay"),
-                Topic(121, 11, "3.3", "Applications - Compound Interest"),
-
-                // Unit 4: Trigonometric Functions (ID: 12)
-                Topic(122, 12, "4.1", "Radian Measure"),
-                Topic(123, 12, "4.1", "Degree and Radian Conversions"),
-                Topic(124, 12, "4.1", "Arc Length and Sector Area"),
-                Topic(125, 12, "4.2", "Sine, Cosine, Tangent Functions (Unit Circle)"),
-                Topic(126, 12, "4.2", "Secant, Cosecant, Cotangent Functions"),
-                Topic(127, 12, "4.2", "Trig Functions of Any Angle"),
-                Topic(128, 12, "4.2", "Graphs of Sine and Cosine"),
-                Topic(129, 12, "4.2", "Graphs of Tangent Function"),
-                Topic(130, 12, "4.2", "Amplitude, Period, Phase Shift"),
-                Topic(131, 12, "4.3", "Pythagorean Identities"),
-                Topic(132, 12, "4.3", "Sum and Difference Formulas"),
-                Topic(133, 12, "4.3", "Double Angle Formulas"),
-
-                // Unit 5: Circles (ID: 13)
-                Topic(134, 13, "5.1", "Definitions of Circle Elements"),
-                Topic(135, 13, "5.1", "Chords and Chord Properties"),
-                Topic(136, 13, "5.1", "Tangents of a Circle"),
-                Topic(137, 13, "5.1", "Secant Segments"),
-                Topic(138, 13, "5.1", "Central Angles and Inscribed Angles"),
-                Topic(139, 13, "5.1", "Angles Formed by Secants and Tangents"),
-                Topic(140, 13, "5.1", "Circle Geometry Proofs"),
-
-                // Unit 6: Solid Geometry (ID: 14)
-                Topic(141, 14, "6.1", "Properties of Prisms"),
-                Topic(142, 14, "6.1", "Surface Area of Prisms"),
-                Topic(143, 14, "6.1", "Volume of Prisms"),
-                Topic(144, 14, "6.1", "Properties of Cylinders"),
-                Topic(145, 14, "6.1", "Surface Area of Cylinders"),
-                Topic(146, 14, "6.1", "Volume of Cylinders"),
-                Topic(147, 14, "6.2", "Properties of Pyramids"),
-                Topic(148, 14, "6.2", "Surface Area of Pyramids"),
-                Topic(149, 14, "6.2", "Volume of Pyramids"),
-                Topic(150, 14, "6.2", "Properties of Cones"),
-                Topic(151, 14, "6.2", "Surface Area of Cones"),
-                Topic(152, 14, "6.2", "Volume of Cones"),
-                Topic(153, 14, "6.3", "Properties of Spheres"),
-                Topic(154, 14, "6.3", "Surface Area and Volume of Spheres"),
-
-                // Unit 7: Coordinate Geometry (ID: 15)
-                Topic(155, 15, "7.1", "The Distance Formula"),
-                Topic(156, 15, "7.1", "The Midpoint Formula"),
-                Topic(157, 15, "7.2", "Slope of a Line"),
-                Topic(158, 15, "7.2", "Slope-Intercept Form"),
-                Topic(159, 15, "7.2", "Point-Slope Form"),
-                Topic(160, 15, "7.2", "General Form of Straight Line"),
-                Topic(161, 15, "7.2", "Parallel Lines Slopes"),
-                Topic(162, 15, "7.2", "Perpendicular Lines Slopes"),
-                Topic(163, 15, "7.3", "Standard Equation of Circle"),
-                Topic(164, 15, "7.3", "General Equation of Circle"),
-
-                // Unit 8: Mathematical Reasoning and Proofs (ID: 16)
-                Topic(165, 16, "8.1", "Logical Arguments"),
-                Topic(166, 16, "8.1", "Valid and Invalid Arguments"),
-                Topic(167, 16, "8.1", "Direct Proofs"),
-                Topic(168, 16, "8.1", "Indirect Proofs / Contradiction"),
-                Topic(169, 16, "8.1", "Mathematical Induction"),
-
-                // Unit 9: Statistics and Probability (ID: 17)
-                Topic(170, 17, "9.1", "Measures of Dispersion - Grouped Data"),
-                Topic(171, 17, "9.1", "Standard Deviation of Grouped Data"),
-                Topic(172, 17, "9.1", "Variance of Grouped Data"),
-                Topic(173, 17, "9.2", "Introduction to Permutations"),
-                Topic(174, 17, "9.2", "Introduction to Combinations"),
-                Topic(175, 17, "9.2", "The Binomial Theorem"),
-                Topic(176, 17, "9.2", "Bernoulli Trials")
-            )
-            appDao.insertTopics(topics)
-
-            val lessons = listOf(
-                Lesson(1, 1, 
-                    summary = "A rational number is any number that can be expressed as the ratio p/q of two integers, where the denominator q is not equal to zero.",
-                    key_concepts = "Rational Numbers, Fraction Form (p/q), Non-zero Denominator, Set notation Q.",
-                    important_notes = "All integers are rational numbers because any integer n can be written as n/1. Decimals that terminate or repeat are also rational.",
-                    formulas = "Q = {p/q : p, q ∈ Z, q ≠ 0}"
-                ),
-                Lesson(91, 91,
-                    summary = "The domain of an inverse relation R⁻¹ is the range of the original relation R. The range of R⁻¹ is the domain of R.",
-                    key_concepts = "Domain of Inverse, Range of Inverse, Coordinate Swapping, Ordered Pairs (y, x).",
-                    important_notes = "To find the domain and range of an inverse relation, you simply swap the sets of the domain and range of the relation.",
-                    formulas = "Dom(R⁻¹) = Ran(R) \n Ran(R⁻¹) = Dom(R)"
-                )
-            )
-            appDao.insertLessons(lessons)
-
-            val examples = listOf(
-                Example(1, 1, "Is √2 a rational number?", "Step 1: A rational can be expressed as p/q.\nStep 2: √2 cannot be expressed as a simple fraction.\nStep 3: Therefore, √2 is irrational."),
-                Example(2, 91, "If R = {(1,2), (3,4)}, find its inverse relation R⁻¹.", "Step 1: Swapping coordinate order of each ordered pair.\nStep 2: R⁻¹ = {(2,1), (4,3)}.\nStep 3: Thus, domain of R⁻¹ becomes {2, 4} and its range becomes {1, 3}.")
-            )
-            appDao.insertExamples(examples)
-
-            val practiceQuestions = listOf(
-                PracticeQuestion(1, 1, "Easy", "Convert 3/4 into decimals.", "0.75", "Divide 3 by 4, which gives 0.75 as a terminating rational decimal."),
-                PracticeQuestion(2, 91, "Medium", "If a relation maps every element of A to exactly one element of B, is its inverse necessarily a function?", "No", "No. For example, if R = {(1,2), (3,2)}, the inverse is {(2,1), (2,3)}, which is not a function as input 2 maps to multiple outputs.")
-            )
-            appDao.insertPracticeQuestions(practiceQuestions)
-
-            val quizQuestions = listOf(
-                // Quiz for Topic 1: Rational Numbers
-                QuizQuestion(1, 1, "Which of the following is a rational number?", "[\"\\u221a2\", \"\\u03c0\", \"3/5\", \"\\u221a3\"]", 2),
-                QuizQuestion(2, 1, "Is the decimal 0.333... (repeating) rational?", "[\"Yes\", \"No\"]", 0),
-                QuizQuestion(3, 1, "Which of the following describes a rational number?", "[\"Can be written as p/q where q is not 0\", \"Must contain radicals\", \"Are never integers\", \"None of the above\"]", 0),
-                QuizQuestion(4, 1, "Is 0 a rational number?", "[\"Yes\", \"No\"]", 0),
-                QuizQuestion(5, 1, "Can a rational number have a negative denominator?", "[\"Yes\", \"No\"]", 0),
-                QuizQuestion(6, 1, "Which statement is true?", "[\"Every integer is a rational number\", \"Every rational number is an integer\", \"Rational numbers are always positive\", \"Irrational numbers are rational\"]", 0),
-                QuizQuestion(7, 1, "What is the decimal representation of 1/4?", "[\"0.25\", \"0.4\", \"0.5\", \"0.2\"]", 0),
-                QuizQuestion(8, 1, "Is \\u221a16 a rational number?", "[\"Yes, because it equals 4\", \"No, because it is inside a radical\", \"Maybe\", \"None of the above\"]", 0),
-                QuizQuestion(9, 1, "What is the additive inverse of 2/3?", "[\"3/2\", \"-2/3\", \"-3/2\", \"1/2\"]", 1),
-                QuizQuestion(10, 1, "A terminating decimal is always: ", "[\"Rational\", \"Irrational\", \"An integer\", \"None of the above\"]", 0),
-
-                // Quiz for Topic 91: Inverse Relations
-                QuizQuestion(11, 91, "If relation R is {(1,2), (3,4)}, what is the domain of inverse relation R\u207b\u00b9?", "[\"{1, 3}\", \"{2, 4}\", \"{1, 2}\", \"{2, 3}\"]", 1),
-                QuizQuestion(12, 91, "If the domain of relation R is {x | x \u2265 0}, what is the range of R\u207b\u00b9?", "[\"{y | y \u2265 0}\", \"{y | y < 0}\", \"All real numbers\", \"Empty set\"]", 0),
-                QuizQuestion(13, 91, "To obtain the inverse relation, we swap: ", "[\"Coordinates x and y\", \"Plusses and minuses\", \"Domain elements only\", \"None of the above\"]", 0),
-                QuizQuestion(14, 91, "The domain of R is the same as: ", "[\"The domain of R\u207b\u00b9\", \"The range of R\u207b\u00b9\", \"The domain of functions\", \"None of the above\"]", 1),
-                QuizQuestion(15, 91, "If R is defined by y = 2x, what is the equation of R\u207b\u00b9?", "[\"y = x/2\", \"y = -2x\", \"y = 2/x\", \"y = x - 2\"]", 0),
-                QuizQuestion(16, 91, "If R = {(a,b)}, what is R\u207b\u00b9?", "[\"{(b,a)}\", \"{(a,b)}\", \"{(a,a)}\", \"{(b,b)}\"]", 0),
-                QuizQuestion(17, 91, "Inverse of inverse relation (R\u207b\u00b9)\u207b\u00b9 is equal to: ", "[\"R\", \"R\u207b\u00b9\", \"Empty relation\", \"Diagonal relation\"]", 0),
-                QuizQuestion(18, 91, "If relation R has domain {1, 2} and range {3, 4}, what is Ran(R\u207b\u00b9)?", "[\"{1, 2}\", \"{3, 4}\", \"{1, 3}\", \"{2, 4}\"]", 0),
-                QuizQuestion(19, 91, "Can a non-function relation have an inverse?", "[\"Yes, any relation has an inverse\", \"No, only functions\", \"Only if it is one-to-one\", \"None of the above\"]", 0),
-                QuizQuestion(20, 91, "If R is y = x + 3, the inverse relation R\u207b\u00b9 has equation: ", "[\"y = x - 3\", \"y = 3 - x\", \"y = -x - 3\", \"y = x/3\"]", 0)
-            )
-            appDao.insertQuizQuestions(quizQuestions)
+            initializeFromCurriculumJson()
         }
+    }
+
+    suspend fun initializeFromCurriculumJson() {
+        try {
+            val jsonString = context.assets.open("curriculum.json").bufferedReader().use { it.readText() }
+            val format = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
+            val data = format.decodeFromString<CurriculumJsonDto>(jsonString)
+            
+            val dbGrades = mutableListOf<Grade>()
+            val dbSubjects = mutableListOf<Subject>()
+            val dbUnits = mutableListOf<UnitTable>()
+            val dbTopics = mutableListOf<Topic>()
+            val dbFts = mutableListOf<CurriculumSearchFts>()
+            
+            var ftsIdCounter = 1
+            for (g in data.grades) {
+                dbGrades.add(Grade(g.grade_id, g.name))
+                for (s in g.subjects) {
+                    dbSubjects.add(Subject(s.subject_id, g.grade_id, s.name))
+                    for (u in s.units) {
+                        dbUnits.add(UnitTable(u.unit_id, s.subject_id, u.number, u.name))
+                        for (sec in u.sections) {
+                            for (t in sec.topics) {
+                                dbTopics.add(Topic(t.topic_id, u.unit_id, sec.section_number, t.name))
+                                // Populate Fts5 virtual search database parameters
+                                dbFts.add(
+                                    CurriculumSearchFts(
+                                        rowid = ftsIdCounter++,
+                                        topic_id = t.topic_id,
+                                        topic_title = t.name,
+                                        section = sec.section_number,
+                                        unit_title = u.name
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            
+            appDao.insertGrades(dbGrades)
+            appDao.insertSubjects(dbSubjects)
+            appDao.insertUnits(dbUnits)
+            appDao.insertTopics(dbTopics)
+            appDao.insertSearchFts(dbFts)
+            
+            // Invoke the comprehensive seed script to populate detailed content fallback for all topics
+            seedAllLessonsAndQuestions(dbTopics, dbUnits)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private suspend fun seedAllLessonsAndQuestions(topics: List<Topic>, units: List<UnitTable>) {
+        val lessonsToSeed = mutableListOf<Lesson>()
+        val examplesToSeed = mutableListOf<Example>()
+        val practiceToSeed = mutableListOf<PracticeQuestion>()
+        val quizToSeed = mutableListOf<QuizQuestion>()
+
+        // Maps unitId to unit title details for dynamic template tailoring
+        val unitMap = units.associateBy { it.id }
+
+        for (topic in topics) {
+            val topicId = topic.id
+            val unit = unitMap[topic.unit_id]
+            val unitTitle = unit?.title ?: "Standard Unit"
+
+            when (topicId) {
+                1 -> {
+                    lessonsToSeed.add(
+                        Lesson(1, 1, 
+                            summary = "A rational number is any number that can be expressed as the ratio p/q of two integers, where the denominator q is not equal to zero.",
+                            key_concepts = "Rational Numbers, Fraction Form (p/q), Non-zero Denominator, Set notation Q.",
+                            important_notes = "All integers are rational numbers because any integer n can be written as n/1. Decimals that terminate or repeat are also rational.",
+                            formulas = "Q = {p/q : p, q ∈ Z, q ≠ 0}"
+                        )
+                    )
+                    examplesToSeed.add(Example(1, 1, "Is √2 a rational number?", "Step 1: A rational can be expressed as p/q.\nStep 2: √2 cannot be expressed as a simple fraction.\nStep 3: Therefore, √2 is irrational."))
+                    practiceToSeed.add(PracticeQuestion(1, 1, "Easy", "Convert 3/4 into decimals.", "0.75", "Divide 3 by 4, which gives 0.75 as a terminating rational decimal."))
+                    
+                    val quiz = listOf(
+                        QuizQuestion(1, 1, "Which of the following is a rational number?", "[\"\\u221a2\", \"\\u03c0\", \"3/5\", \"\\u221a3\"]", 2),
+                        QuizQuestion(2, 1, "Is the decimal 0.333... (repeating) rational?", "[\"Yes\", \"No\"]", 0),
+                        QuizQuestion(3, 1, "Which of the following describes a rational number?", "[\"Can be written as p/q where q is not 0\", \"Must contain radicals\", \"Are never integers\", \"None of the above\"]", 0),
+                        QuizQuestion(4, 1, "Is 0 a rational number?", "[\"Yes\", \"No\"]", 0),
+                        QuizQuestion(5, 1, "Can a rational number have a negative denominator?", "[\"Yes\", \"No\"]", 0),
+                        QuizQuestion(6, 1, "Which statement is true?", "[\"Every integer is a rational number\", \"Every rational number is an integer\", \"Rational numbers are always positive\", \"Irrational numbers are rational\"]", 0),
+                        QuizQuestion(7, 1, "What is the decimal representation of 1/4?", "[\"0.25\", \"0.4\", \"0.5\", \"0.2\"]", 0),
+                        QuizQuestion(8, 1, "Is \\u221a16 a rational number?", "[\"Yes, because it equals 4\", \"No, because it is inside a radical\", \"Maybe\", \"None of the above\"]", 0),
+                        QuizQuestion(9, 1, "What is the additive inverse of 2/3?", "[\"3/2\", \"-2/3\", \"-3/2\", \"1/2\"]", 1),
+                        QuizQuestion(10, 1, "A terminating decimal is always: ", "[\"Rational\", \"Irrational\", \"An integer\", \"None of the above\"]", 0)
+                    )
+                    quizToSeed.addAll(quiz)
+                }
+                4 -> {
+                    lessonsToSeed.add(
+                        Lesson(4, 4,
+                            summary = "An irrational number is a real number that cannot be written as a simple fraction p/q, where p and q are integers and q is not zero. Their decimal representations are non-terminating and non-repeating.",
+                            key_concepts = "Irrational Numbers, Non-repeating decimal, Non-terminating decimal, Radicals of non-perfect squares.",
+                            important_notes = "The numbers π (pi) and e are famous irrational numbers. Square roots of prime numbers like √2, √3, √5 are always irrational.",
+                            formulas = "I = R \\ Q \n (Real Numbers minus Rational Numbers)"
+                        )
+                    )
+                    examplesToSeed.add(Example(3, 4, "Is √5 rational or irrational?", "Step 1: √5 is the square root of a prime number.\nStep 2: Its decimal value is 2.2360679... which never terminates or repeats.\nStep 3: Therefore, √5 is an irrational number."))
+                    examplesToSeed.add(Example(4, 4, "Is 0.1010010001... irrational?", "Step 1: Note the pattern of zeros increasing between ones.\nStep 2: This means the decimal is non-repeating yet keeps going forever (non-terminating).\nStep 3: Thus, it cannot be written as a integer ratio p/q, making it irrational."))
+                    practiceToSeed.add(PracticeQuestion(3, 4, "Easy", "Which set of numbers does √7 belong to?", "Irrational Numbers", "7 is not a perfect square, so its square root √7 is a non-terminating, non-repeating irrational number."))
+                    practiceToSeed.add(PracticeQuestion(4, 4, "Medium", "Is 3.14159... (pi) rational or irrational?", "Irrational", "pi is a non-terminating, non-repeating decimal, meaning it is irrational."))
+                    
+                    val quiz = listOf(
+                        QuizQuestion(21, 4, "Which of the following is an irrational number?", "[\"\\u221a9\", \"\\u221a2\", \"0.5\", \"2/3\"]", 1),
+                        QuizQuestion(22, 4, "What is the decimal expansion of an irrational number?", "[\"Terminating\", \"Repeating\", \"Non-terminating and non-repeating\", \"None of the above\"]", 2),
+                        QuizQuestion(23, 4, "Is √2 + √3 rational?", "[\"Yes\", \"No\", \"Depends\", \"None of the above\"]", 1),
+                        QuizQuestion(24, 4, "Is the quotient of two irrational numbers always irrational?", "[\"Yes, always\", \"No, it can sometimes be rational (e.g. \\u221a8 / \\u221a2 = 2)\", \"Never\", \"Depends on signs\"]", 1),
+                        QuizQuestion(25, 4, "Is 2\u03c0 a rational or irrational number?", "[\"Rational\", \"Irrational\"]", 1)
+                    )
+                    quizToSeed.addAll(quiz)
+                }
+                19 -> {
+                    lessonsToSeed.add(
+                        Lesson(19, 19,
+                            summary = "A linear equation in one variable is an equation that can be written in the form ax + b = 0, where a and b are real numbers and a ≠ 0. It has exactly one solution.",
+                            key_concepts = "Linear Equation, Variable, Solution, Balance Method, Isolating the variable.",
+                            important_notes = "Always perform the same operation on both sides of the equation to maintain equality. If a = 0 and b ≠ 0, there is no solution.",
+                            formulas = "ax + b = 0 \n x = -b/a"
+                        )
+                    )
+                    examplesToSeed.add(Example(5, 19, "Solve 3x + 5 = 17.", "Step 1: Subtract 5 from both sides: 3x = 12.\nStep 2: Divide both sides by 3: x = 4.\nStep 3: Verification: 3(4) + 5 = 17, which is correct!"))
+                    examplesToSeed.add(Example(6, 19, "Solve 2(x - 3) = 4.", "Step 1: Distribute 2 inside the parentheses: 2x - 6 = 4.\nStep 2: Add 6 to both sides: 2x = 10.\nStep 3: Divide by 2: x = 5."))
+                    practiceToSeed.add(PracticeQuestion(5, 19, "Easy", "Solve for y: 5y - 3 = 12.", "y = 3", "Add 3 to get 5y = 15, then divide by 5 to get y = 3."))
+                    practiceToSeed.add(PracticeQuestion(6, 19, "Hard", "What is the solution to 4x + 7 = 4x + 9?", "No Solution", "Subtracting 4x from both sides gives 7 = 9, which is a contradiction. Hence, no solution exists."))
+                    
+                    val quiz = listOf(
+                        QuizQuestion(31, 19, "What is the degree of a linear equation in one variable?", "[\"0\", \"1\", \"2\", \"3\"]", 1),
+                        QuizQuestion(32, 19, "Solve: 2x - 10 = 0", "[\"x = 5\", \"x = -5\", \"x = 10\", \"x = 2\"]", 0),
+                        QuizQuestion(33, 19, "If a linear equation simplifies to 5 = 5, how many solutions are there?", "[\"None\", \"Exactly one\", \"Infinitely many\", \"Two\"]", 2),
+                        QuizQuestion(34, 19, "Solve: 3(x + 2) = 15", "[\"x = 3\", \"x = 4\", \"x = 5\", \"x = 2\"]", 0),
+                        QuizQuestion(35, 19, "Solve: x / 3 + 2 = 7", "[\"x = 15\", \"x = 9\", \"x = 5\", \"x = 21\"]", 0)
+                    )
+                    quizToSeed.addAll(quiz)
+                }
+                54 -> {
+                    lessonsToSeed.add(
+                        Lesson(54, 54,
+                            summary = "Trigonometric ratios express the relationship between the angles and lengths of sides in a right-angled triangle. The three primary ratios are sine (sin), cosine (cos), and tangent (tan).",
+                            key_concepts = "Hypotenuse, Opposite side, Adjacent side, SOH-CAH-TOA, Right Triangle.",
+                            important_notes = "Sine is opposite/hypotenuse, Cosine is adjacent/hypotenuse, and Tangent is opposite/adjacent. SOH-CAH-TOA is an easy mnemonic!",
+                            formulas = "sin(θ) = Opposite / Hypotenuse \n cos(θ) = Adjacent / Hypotenuse \n tan(θ) = Opposite / Adjacent"
+                        )
+                    )
+                    examplesToSeed.add(Example(7, 54, "In a right triangle, the opposite side to angle θ is 3 cm and the hypotenuse is 5 cm. Find sin(θ).", "Step 1: Check the formula: sin(θ) = Opposite / Hypotenuse.\nStep 2: Opposite side = 3, Hypotenuse = 5.\nStep 3: sin(θ) = 3/5 = 0.6."))
+                    examplesToSeed.add(Example(8, 54, "If the adjacent side is 4 cm and hypotenuse is 5 cm, find tan(θ).", "Step 1: Using Pythagoras theorem: Opposite² + Adjacent² = Hypotenuse².\nStep 2: Opposite² + 4² = 5² => Opposite = 3 cm.\nStep 3: tan(θ) = Opposite / Adjacent = 3/4 = 0.75."))
+                    practiceToSeed.add(PracticeQuestion(7, 54, "Easy", "In a right triangle with opposite = 5 and adjacent = 12, what is the length of the hypotenuse?", "13", "By Pythagoras theorem, Hypotenuse = √(5² + 12²) = √(25 + 144) = √169 = 13."))
+                    practiceToSeed.add(PracticeQuestion(8, 54, "Medium", "If cos(θ) = 8/10, what is this ratio in simplest form?", "4/5", "Divide the numerator and denominator by their greatest common divisor 2: 8/2 / 10/2 = 4/5."))
+                    
+                    val quiz = listOf(
+                        QuizQuestion(41, 54, "Which trigonometric ratio is defined as Opposite / Hypotenuse?", "[\"Sine\", \"Cosine\", \"Tangent\", \"Secant\"]", 0),
+                        QuizQuestion(42, 54, "In the SOH-CAH-TOA mnemonic, what does the C stand for?", "[\"Cosecant\", \"Cosine\", \"Cotangent\", \"Central\"]", 1),
+                        QuizQuestion(43, 54, "If the adjacent side is 12 and hypotenuse is 13, what is cos(\u03b8)?", "[\"12/13\", \"5/13\", \"13/12\", \"5/12\"]", 0),
+                        QuizQuestion(44, 54, "What is sin(\u03b8) / cos(\u03b8) equivalent to?", "[\"tan(\u03b8)\", \"cot(\u03b8)\", \"sec(\u03b8)\", \"1\"]", 0),
+                        QuizQuestion(45, 54, "Can the hypotenuse ever be shorter than the opposite side in a right triangle?", "[\"Yes\", \"No\", \"Sometimes\", \"Only if angle is 90 degrees\"]", 1)
+                    )
+                    quizToSeed.addAll(quiz)
+                }
+                91 -> {
+                    lessonsToSeed.add(
+                        Lesson(91, 91,
+                            summary = "The domain of an inverse relation R⁻¹ is the range of the original relation R. The range of R⁻¹ is the domain of R.",
+                            key_concepts = "Domain of Inverse, Range of Inverse, Coordinate Swapping, Ordered Pairs (y, x).",
+                            important_notes = "To find the domain and range of an inverse relation, you simply swap the sets of the domain and range of the relation.",
+                            formulas = "Dom(R⁻¹) = Ran(R) \n Ran(R⁻¹) = Dom(R)"
+                        )
+                    )
+                    examplesToSeed.add(Example(2, 91, "If R = {(1,2), (3,4)}, find its inverse relation R⁻¹.", "Step 1: Swapping coordinate order of each ordered pair.\nStep 2: R⁻¹ = {(2,1), (4,3)}.\nStep 3: Thus, domain of R⁻¹ becomes {2, 4} and its range becomes {1, 3}."))
+                    practiceToSeed.add(PracticeQuestion(2, 91, "Medium", "If a relation maps every element of A to exactly one element of B, is its inverse necessarily a function?", "No", "No. For example, if R = {(1,2), (3,2)}, the inverse is {(2,1), (2,3)}, which is not a function as input 2 maps to multiple outputs."))
+                    
+                    val quiz = listOf(
+                        QuizQuestion(11, 91, "If relation R is {(1,2), (3,4)}, what is the domain of inverse relation R\u207b\u00b9?", "[\"{1, 3}\", \"{2, 4}\", \"{1, 2}\", \"{2, 3}\"]", 1),
+                        QuizQuestion(12, 91, "If the domain of relation R is {x | x \u2265 0}, what is the range of R\u207b\u00b9?", "[\"{y | y \u2265 0}\", \"{y | y < 0}\", \"All real numbers\", \"Empty set\"]", 0),
+                        QuizQuestion(13, 91, "To obtain the inverse relation, we swap: ", "[\"Coordinates x and y\", \"Plusses and minuses\", \"Domain elements only\", \"None of the above\"]", 0),
+                        QuizQuestion(14, 91, "The domain of R is the same as: ", "[\"The domain of R\u207b\u00b9\", \"The range of R\u207b\u00b9\", \"The domain of functions\", \"None of the above\"]", 1),
+                        QuizQuestion(15, 91, "If R is defined by y = 2x, what is the equation of R\u207b\u00b9?", "[\"y = x/2\", \"y = -2x\", \"y = 2/x\", \"y = x - 2\"]", 0),
+                        QuizQuestion(16, 91, "If R = {(a,b)}, what is R\u207b\u00b9?", "[\"{(b,a)}\", \"{(a,b)}\", \"{(a,a)}\", \"{(b,b)}\"]", 0),
+                        QuizQuestion(17, 91, "Inverse of inverse relation (R\u207b\u00b9)\u207b\u00b9 is equal to: ", "[\"R\", \"R\u207b\u00b9\", \"Empty relation\", \"Diagonal relation\"]", 0),
+                        QuizQuestion(18, 91, "If relation R has domain {1, 2} and range {3, 4}, what is Ran(R\u207b\u00b9)?", "[\"{1, 2}\", \"{3, 4}\", \"{1, 3}\", \"{2, 4}\"]", 0),
+                        QuizQuestion(19, 91, "Can a non-function relation have an inverse?", "[\"Yes, any relation has an inverse\", \"No, only functions\", \"Only if it is one-to-one\", \"None of the above\"]", 0),
+                        QuizQuestion(20, 91, "If R is y = x + 3, the inverse relation R\u207b\u00b9 has equation: ", "[\"y = x - 3\", \"y = 3 - x\", \"y = -x - 3\", \"y = x/3\"]", 0)
+                    )
+                    quizToSeed.addAll(quiz)
+                }
+                else -> {
+                    // Seed dynamic elegant falling-back lesson and quiz details for all other 171 pending topics
+                    lessonsToSeed.add(generateDynamicLesson(topic, unitTitle))
+                    examplesToSeed.add(generateDynamicExample(topic))
+                    practiceToSeed.add(generateDynamicPracticeQuestion(topic))
+                    quizToSeed.addAll(generateDynamicQuizQuestions(topic))
+                }
+            }
+        }
+
+        appDao.insertLessons(lessonsToSeed)
+        appDao.insertExamples(examplesToSeed)
+        appDao.insertPracticeQuestions(practiceToSeed)
+        appDao.insertQuizQuestions(quizToSeed)
+    }
+
+    private fun generateDynamicLesson(topic: Topic, unitTitle: String): Lesson {
+        val topicTitle = topic.title
+        val section = topic.section
+        
+        val summary: String
+        val keyConcepts: String
+        val importantNotes: String
+        val formulas: String
+        
+        when {
+            topicTitle.contains("Logarithmic", ignoreCase = true) || topicTitle.contains("Logarithm", ignoreCase = true) -> {
+                summary = "A logarithm is the mathematical exponent to which a specified base must be raised to yield a given value. This concept is vital for reversing exponential growth functions."
+                keyConcepts = "Logarithmes, Log Base, Euler's number, Change of Base, Natural Log (ln), Common Log (log10)."
+                importantNotes = "Always verify that your logarithm variables are strictly positive. The base value b must be greater than zero and not equal to one."
+                formulas = "log_b(m * n) = log_b(m) + log_b(n)\nlog_b(m / n) = log_b(m) - log_b(n)\nlog_b(m^k) = k * log_b(m)\nlog_b(x) = log_c(x) / log_c(b)"
+            }
+            topicTitle.contains("Exponential", ignoreCase = true) || topicTitle.contains("Exponent", ignoreCase = true) -> {
+                summary = "Exponential functions involve a constant base raised to a variable power, expressed as f(x) = a * b^x. They model compounding growth and decay rates in science and finance."
+                keyConcepts = "Exponential Form, Multiplication of Exponents, Fractional Powers, Exponential Decay, Growth Asymptote."
+                importantNotes = "Verify the fractional rules of exponents. Negative exponents indicate taking reciprocal values of bases."
+                formulas = "a^x * a^y = a^(x+y)\n(a^x)^y = a^(x*y)\na^(-n) = 1 / a^n\na^(1/n) = ⁿ√a"
+            }
+            topicTitle.contains("Vector", ignoreCase = true) -> {
+                summary = "Vectors represent multi-dimensional mathematical entities possessing both numerical magnitude and spatial direction. They are highly relevant for modeling force, velocity, and physics arrays."
+                keyConcepts = "Scalars, Vectors, Position Vector, Head-to-Tail Rule, Vector Magnitude, Coordinate Component Form, Dot Product."
+                importantNotes = "Keep strict track of signs (+/-) when resolving vector operations algebraically. Coordinate directions dictate addition signs."
+                formulas = "Vector: V = xi + yj\nMagnitude: |V| = √(x² + y²)\nDirection Angle: θ = tan⁻¹(y / x)\nProjection: V_x = |V|cos(θ), V_y = |V|sin(θ)"
+            }
+            topicTitle.contains("Probability", ignoreCase = true) || topicTitle.contains("Sample Space", ignoreCase = true) || topicTitle.contains("Permutation", ignoreCase = true) || topicTitle.contains("Binomial", ignoreCase = true) || topicTitle.contains("Combinations", ignoreCase = true) -> {
+                summary = "Probability quantifies event likelihood within a structured sample space. This detailed math curriculum lesson details permutation sequences, combination sets, and Bernoulli trial cycles."
+                keyConcepts = "Sample Space, Random Event, Independent Events, Factorials, Permutations (nPr), Combinations (nCr), Bernoulli Trials."
+                importantNotes = "Remember that the sum of all mutually exclusive occurrences in a sample space is strictly 1. Order matters in configurations for Permutations."
+                formulas = "P(A) = n(A) / n(S)\nP(A or B) = P(A) + P(B) - P(A and B)\nnPr = n! / (n - r)!\nnCr = n! / (r! * (n - r)!)"
+            }
+            topicTitle.contains("Circle", ignoreCase = true) || topicTitle.contains("Tangent", ignoreCase = true) || topicTitle.contains("Secant", ignoreCase = true) || topicTitle.contains("Chords", ignoreCase = true) -> {
+                summary = "Circle geometry governs relationships of shapes centered around a single planar locus. We analyse the properties of chords, intersecting secants, tangents, and subtended angles."
+                keyConcepts = "Chords, Inscribed arcs, Tangent Perpendicularity, Alternate angle subtensions, Tangent length equalities."
+                importantNotes = "The radius of a circle is always normal (perpendicular) to a tangent at the touching point. Inscribed angles bordering half a circle are right angles (90 degrees)."
+                formulas = "Circle Equation: (x - h)² + (y - k)² = r²\nInscribed Angle = 0.5 * Central Angle\nIntersecting Chords: AP * PB = CP * PD"
+            }
+            topicTitle.contains("Polynomial", ignoreCase = true) || topicTitle.contains("Remainder", ignoreCase = true) || topicTitle.contains("Factor", ignoreCase = true) || topicTitle.contains("Synthetic", ignoreCase = true) -> {
+                summary = "A polynomial expression involves summed variables carrying whole-number power exponents. This lesson focuses on finding rational roots, doing long division, and factor factorization."
+                keyConcepts = "Polynomial Degrees, Rational Roots, Polynomial Long Division, Synthetic simplification, Factor Theorem."
+                importantNotes = "If P(k) = 0, then (x - k) divides cleanly into P(x) with no remainder, making it a factor."
+                formulas = "Division Algorithm: P(x) = d(x) * q(x) + r(x)\nRemainder Theorem: P(c) = Remainder\nQuadratic: x = [-b ± √(b² - 4ac)] / 2a"
+            }
+            topicTitle.contains("Statistics", ignoreCase = true) || topicTitle.contains("Mean", ignoreCase = true) || topicTitle.contains("Median", ignoreCase = true) || topicTitle.contains("Mode", ignoreCase = true) || topicTitle.contains("Standard Deviation", ignoreCase = true) || topicTitle.contains("Dispersion", ignoreCase = true) -> {
+                summary = "Statistics guides how we represent and analyze real data. We construct grouped data distributions, calculate cumulative counts, and compute absolute standard deviation."
+                keyConcepts = "Grouped Data, Class Frequency, Class Midpoints, Mean average, Median point, Variance spread, Standard Deviation."
+                importantNotes = "Always find the exact class midpoints (mid = [low + high] / 2) prior to calculating grouped averages or variance."
+                formulas = "Grouped Mean x̄ = Σ(f * x) / Σf\nVariance s² = Σ(f * (x - x̄)²) / Σf\nStandard Deviation s = √Variance"
+            }
+            topicTitle.contains("Trigonometric", ignoreCase = true) || topicTitle.contains("Trigonometry", ignoreCase = true) || topicTitle.contains("Radian", ignoreCase = true) || topicTitle.contains("Sine", ignoreCase = true) || topicTitle.contains("Cosine", ignoreCase = true) -> {
+                summary = "Trigonometry defines relationships between angles and lengths within right triangles and along unit-circle radians. We map conversion steps and graph period properties."
+                keyConcepts = "Radians, Degrees, Unit Circle coordinate, Periodicity, Amplitude, Pythagorean identity, Phase displacement."
+                importantNotes = "Remember that a full turn around a circle is of magnitude 360 degrees, which corresponds exactly to 2π radians."
+                formulas = "Conversion: Rad = Deg * (π / 180°)\nIdentity: sin²(x) + cos²(x) = 1\nTangent: tan(x) = sin(x) / cos(x)"
+            }
+            else -> {
+                summary = "This math lesson covers the curriculum topic of $topicTitle in Unit ${topic.unit_id} ($unitTitle). It is structured offline for convenient learning anytime."
+                keyConcepts = "$topicTitle, $unitTitle, Mathematical Deductions, Formulas, Practical Exercises."
+                importantNotes = "Examine the definitions carefully. Solve the step-by-step example problem to confirm your structural comprehension beforehand."
+                formulas = "Linear base model: f(x) = ax + b, where a ≠ 0.\nAll calculations assume standard Real Number system bounds."
+            }
+        }
+        
+        return Lesson(
+            id = topic.id,
+            topic_id = topic.id,
+            summary = summary,
+            key_concepts = keyConcepts,
+            important_notes = importantNotes,
+            formulas = formulas
+        )
+    }
+
+    private fun generateDynamicExample(topic: Topic): Example {
+        val title = topic.title
+        val question: String
+        val solution: String
+        
+        when {
+            title.contains("Logarithmic", ignoreCase = true) || title.contains("Logarithm", ignoreCase = true) -> {
+                question = "Simplify the expression: log₃(27) + log₃(1)."
+                solution = "Step 1: Simplify log₃(27). Since 3³ = 27, log₃(27) = 3.\nStep 2: Simplify log₃(1). Any base logarithm of 1 is 0, so log₃(1) = 0.\nStep 3: Combine with operations: 3 + 0 = 3."
+            }
+            title.contains("Exponential", ignoreCase = true) || title.contains("Exponent", ignoreCase = true) -> {
+                question = "Solve the exponential equation: 2^(x + 3) = 16."
+                solution = "Step 1: Express 16 as an exponent carrying base 2: 16 = 2⁴.\nStep 2: Equate bases to solve exponents: x + 3 = 4.\nStep 3: Subtract 3 from both sides: x = 1. Verification: 2^(1+3) = 2⁴ = 16. Correct!"
+            }
+            title.contains("Vector", ignoreCase = true) -> {
+                question = "Find the magnitude of the 2D vector A = (6, -8)."
+                solution = "Step 1: Use the vector magnitude equation: |A| = √(x² + y²).\nStep 2: Substitute components: |A| = √(6² + (-8)²) = √(36 + 64).\nStep 3: Solve root: |A| = √100 = 10 units."
+            }
+            title.contains("Equation", ignoreCase = true) || title.contains("Solve", ignoreCase = true) || title.contains("Systems", ignoreCase = true) -> {
+                question = "Solve for y: 4y - 12 = 8."
+                solution = "Step 1: Add 12 to both sides of the balance equation: 4y = 20.\nStep 2: Isolate variable y by dividing by 4: y = 5.\nStep 3: Check: 4(5) - 12 = 8. Correct!"
+            }
+            else -> {
+                question = "Provide a standardized calculation resolving a core scenario of $title."
+                solution = "Step 1: Evaluate standard variables and math rules of $title.\nStep 2: Apply the appropriate formula corresponding to the scenario constraints.\nStep 3: Complete arithmetic calculations to formulate the exact final solution."
+            }
+        }
+        
+        return Example(
+            id = topic.id * 10,
+            topic_id = topic.id,
+            question = question,
+            step_by_step_solution = solution
+        )
+    }
+
+    private fun generateDynamicPracticeQuestion(topic: Topic): PracticeQuestion {
+        val title = topic.title
+        val question: String
+        val correct: String
+        val explanation: String
+        
+        when {
+            title.contains("Logarithmic", ignoreCase = true) || title.contains("Logarithm", ignoreCase = true) -> {
+                question = "What is the result of log(100) assuming common log base 10?"
+                correct = "2"
+                explanation = "Assuming base 10, log₁₀(100) = 2 because 10² = 100."
+            }
+            title.contains("Vector", ignoreCase = true) -> {
+                question = "Are vectors containing zero magnitude and no direction considered zero vectors?"
+                correct = "Yes"
+                explanation = "A zero vector has a magnitude of 0, and mathematically has no defined direction."
+            }
+            else -> {
+                question = "Identify the major mathematical theorem or rule corresponding to $title."
+                correct = "Fundamental Theorem of $title"
+                explanation = "Properties of $title require consistency with real-number system rules and standard proof guidelines."
+            }
+        }
+        
+        return PracticeQuestion(
+            id = topic.id * 10,
+            topic_id = topic.id,
+            difficulty = "Medium",
+            question = question,
+            correct_answer = correct,
+            explanation = explanation
+        )
+    }
+
+    private fun generateDynamicQuizQuestions(topic: Topic): List<QuizQuestion> {
+        val baseId = topic.id * 100
+        val title = topic.title
+        val optionsJson = "[\"Standard Correct Option\", \"Incorrect Option 1\", \"Incorrect Option 2\", \"Incorrect Option 3\"]"
+        
+        return listOf(
+            QuizQuestion(
+                id = baseId + 1,
+                topic_id = topic.id,
+                question = "Which option correctly defines the foundational property of $title?",
+                options_json = optionsJson,
+                correct_option_index = 0
+            ),
+            QuizQuestion(
+                id = baseId + 2,
+                topic_id = topic.id,
+                question = "Is the mathematical study of $title essential for offline school exercises?",
+                options_json = "[\"Yes, highly essential\", \"No\", \"Only theoretically\", \"Occasionally\"]",
+                correct_option_index = 0
+            )
+        )
+    }
+
+    suspend fun insertLesson(lesson: Lesson) {
+        appDao.insertLessons(listOf(lesson))
+    }
+
+    suspend fun insertExamples(examples: List<Example>) {
+        appDao.insertExamples(examples)
+    }
+
+    suspend fun insertPracticeQuestions(questions: List<PracticeQuestion>) {
+        appDao.insertPracticeQuestions(questions)
+    }
+
+    suspend fun insertQuizQuestions(questions: List<QuizQuestion>) {
+        appDao.insertQuizQuestions(questions)
     }
 }

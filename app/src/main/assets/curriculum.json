@@ -1,0 +1,558 @@
+{
+  "grades": [
+    {
+      "grade_id": 9,
+      "name": "Grade 9",
+      "subjects": [
+        {
+          "subject_id": 1,
+          "name": "Mathematics",
+          "units": [
+            {
+              "unit_id": 1,
+              "number": 1,
+              "name": "The Number System",
+              "sections": [
+                {
+                  "section_number": "1.1",
+                  "topics": [
+                    { "topic_id": 1, "name": "Introduction to Rational Numbers" },
+                    { "topic_id": 2, "name": "Properties of Rational Numbers" },
+                    { "topic_id": 3, "name": "Decimal representation of Rational Numbers" }
+                  ]
+                },
+                {
+                  "section_number": "1.2",
+                  "topics": [
+                    { "topic_id": 4, "name": "Introduction to Irrational Numbers" },
+                    { "topic_id": 5, "name": "Decimal representation of Irrational Numbers" },
+                    { "topic_id": 6, "name": "Properties of Irrational Numbers" }
+                  ]
+                },
+                {
+                  "section_number": "1.3",
+                  "topics": [
+                    { "topic_id": 7, "name": "The Real Number Line" },
+                    { "topic_id": 8, "name": "Order properties of Real Numbers" },
+                    { "topic_id": 9, "name": "Density of Real Numbers" }
+                  ]
+                },
+                {
+                  "section_number": "1.4",
+                  "topics": [
+                    { "topic_id": 10, "name": "Upper bounds and Lower bounds" },
+                    { "topic_id": 11, "name": "Bounded sets" },
+                    { "topic_id": 12, "name": "Least upper bounds (Supremum)" },
+                    { "topic_id": 13, "name": "Greatest lower bounds (Infimum)" }
+                  ]
+                },
+                {
+                  "section_number": "1.5",
+                  "topics": [
+                    { "topic_id": 14, "name": "Introduction to Radicals" },
+                    { "topic_id": 15, "name": "Simplification of Radicals" },
+                    { "topic_id": 16, "name": "Addition and Subtraction of Radicals" },
+                    { "topic_id": 17, "name": "Multiplication and Division of Radicals" },
+                    { "topic_id": 18, "name": "Rationalizing denominators" }
+                  ]
+                }
+              ]
+            },
+            {
+              "unit_id": 2,
+              "number": 2,
+              "name": "Equations and Inequalities",
+              "sections": [
+                {
+                  "section_number": "2.1",
+                  "topics": [
+                    { "topic_id": 19, "name": "Linear Equations in One Variable" },
+                    { "topic_id": 20, "name": "Solving Multi-step Linear Equations" },
+                    { "topic_id": 21, "name": "Linear Equation Word Problems" }
+                  ]
+                },
+                {
+                  "section_number": "2.2",
+                  "topics": [
+                    { "topic_id": 22, "name": "Introduction to Rational Equations" },
+                    { "topic_id": 23, "name": "Simplifying Rational Expressions" },
+                    { "topic_id": 24, "name": "Solving Rational Equations" }
+                  ]
+                },
+                {
+                  "section_number": "2.3",
+                  "topics": [
+                    { "topic_id": 25, "name": "Introduction to Absolute Value" },
+                    { "topic_id": 26, "name": "Properties of Absolute Value" },
+                    { "topic_id": 27, "name": "Solving Absolute Value Equations" }
+                  ]
+                },
+                {
+                  "section_number": "2.4",
+                  "topics": [
+                    { "topic_id": 28, "name": "Systems of Linear Equations in Two Variables" },
+                    { "topic_id": 29, "name": "Solving Systems by Graphing" },
+                    { "topic_id": 30, "name": "Solving Systems by Substitution" },
+                    { "topic_id": 31, "name": "Solving Systems by Elimination" },
+                    { "topic_id": 32, "name": "Applications of Linear Systems" }
+                  ]
+                }
+              ]
+            },
+            {
+              "unit_id": 3,
+              "number": 3,
+              "name": "Further on Inequalities",
+              "sections": [
+                {
+                  "section_number": "3.1",
+                  "topics": [
+                    { "topic_id": 33, "name": "Linear Inequalities in One Variable" },
+                    { "topic_id": 34, "name": "Properties of Inequalities" },
+                    { "topic_id": 35, "name": "Solving Multi-step Inequalities" }
+                  ]
+                },
+                {
+                  "section_number": "3.2",
+                  "topics": [
+                    { "topic_id": 36, "name": "Absolute Value Inequalities" },
+                    { "topic_id": 37, "name": "Solving Less-Than Absolute Value Inequalities" },
+                    { "topic_id": 38, "name": "Solving Greater-Than Absolute Value Inequalities" }
+                  ]
+                },
+                {
+                  "section_number": "3.3",
+                  "topics": [
+                    { "topic_id": 39, "name": "Systems of Linear Inequalities in Two Variables" },
+                    { "topic_id": 40, "name": "Graphing Systems of Inequalities" }
+                  ]
+                }
+              ]
+            },
+            {
+              "unit_id": 4,
+              "number": 4,
+              "name": "Further on Relations and Functions",
+              "sections": [
+                {
+                  "section_number": "4.1",
+                  "topics": [
+                    { "topic_id": 41, "name": "Ordered Pairs" },
+                    { "topic_id": 42, "name": "Cartesian Products of Sets" }
+                  ]
+                },
+                {
+                  "section_number": "4.2",
+                  "topics": [
+                    { "topic_id": 43, "name": "Introduction to Relations" },
+                    { "topic_id": 44, "name": "Domain and Range of Relations" },
+                    { "topic_id": 45, "name": "Graphing Relations" },
+                    { "topic_id": 46, "name": "Inverse of a Relation" }
+                  ]
+                },
+                {
+                  "section_number": "4.3",
+                  "topics": [
+                    { "topic_id": 47, "name": "Introduction to Functions" },
+                    { "topic_id": 48, "name": "Function Notation" },
+                    { "topic_id": 49, "name": "The Vertical Line Test" },
+                    { "topic_id": 50, "name": "One-to-One Functions" },
+                    { "topic_id": 51, "name": "Onto Functions" },
+                    { "topic_id": 52, "name": "One-to-One Correspondence" }
+                  ]
+                }
+              ]
+            },
+            {
+              "unit_id": 5,
+              "number": 5,
+              "name": "Trigonometry",
+              "sections": [
+                {
+                  "section_number": "5.1",
+                  "topics": [
+                    { "topic_id": 53, "name": "Angles in Standard Position" },
+                    { "topic_id": 54, "name": "Introduction to Trigonometric Ratios" },
+                    { "topic_id": 55, "name": "Trig Ratios of Special Angles (30, 45, 60)" },
+                    { "topic_id": 56, "name": "Trig Ratios of Trigonometric Quadrantal Angles" }
+                  ]
+                },
+                {
+                  "section_number": "5.2",
+                  "topics": [
+                    { "topic_id": 57, "name": "Solving Right Triangles" },
+                    { "topic_id": 58, "name": "Angles of Elevation" },
+                    { "topic_id": 59, "name": "Angles of Depression" },
+                    { "topic_id": 60, "name": "Trigonometric Applications" }
+                  ]
+                }
+              ]
+            },
+            {
+              "unit_id": 6,
+              "number": 6,
+              "name": "Vectors in Two Dimensions",
+              "sections": [
+                {
+                  "section_number": "6.1",
+                  "topics": [
+                    { "topic_id": 61, "name": "Scalars and Vectors" },
+                    { "topic_id": 62, "name": "Geometric Representation of Vectors" },
+                    { "topic_id": 63, "name": "Position Vectors" }
+                  ]
+                },
+                {
+                  "section_number": "6.2",
+                  "topics": [
+                    { "topic_id": 64, "name": "Vector Addition (Geometric)" },
+                    { "topic_id": 65, "name": "Vector Subtraction (Geometric)" },
+                    { "topic_id": 66, "name": "Scalar Multiplication" },
+                    { "topic_id": 67, "name": "Components of a Vector" },
+                    { "topic_id": 68, "name": "Vector Arithmetic in Algebra" },
+                    { "topic_id": 69, "name": "Magnitude of a Vector" }
+                  ]
+                }
+              ]
+            },
+            {
+              "unit_id": 7,
+              "number": 7,
+              "name": "Statistics and Probability",
+              "sections": [
+                {
+                  "section_number": "7.1",
+                  "topics": [
+                    { "topic_id": 70, "name": "Introduction to Grouped Data" },
+                    { "topic_id": 71, "name": "Frequency Distributions" },
+                    { "topic_id": 72, "name": "Class Intervals and Midpoints" },
+                    { "topic_id": 73, "name": "Cumulative Frequency Tables" }
+                  ]
+                },
+                {
+                  "section_number": "7.2",
+                  "topics": [
+                    { "topic_id": 74, "name": "Mean of Grouped Data" },
+                    { "topic_id": 75, "name": "Median of Grouped Data" },
+                    { "topic_id": 76, "name": "Mode of Grouped Data" }
+                  ]
+                },
+                {
+                  "section_number": "7.3",
+                  "topics": [
+                    { "topic_id": 77, "name": "Introduction to Probability" },
+                    { "topic_id": 78, "name": "Sample Spaces and Events" },
+                    { "topic_id": 79, "name": "Addition Rule of Probability" },
+                    { "topic_id": 80, "name": "Independent Events" }
+                  ]
+                }
+              ]
+            },
+            {
+              "unit_id": 8,
+              "number": 8,
+              "name": "Mathematical Reasoning",
+              "sections": [
+                {
+                  "section_number": "8.1",
+                  "topics": [
+                    { "topic_id": 81, "name": "Logic Statements and Propositions" },
+                    { "topic_id": 82, "name": "Logical Connectives - Negation" },
+                    { "topic_id": 83, "name": "Logical Connectives - Conjunction" },
+                    { "topic_id": 84, "name": "Logical Connectives - Disjunction" },
+                    { "topic_id": 85, "name": "Conditional and Biconditional Statements" },
+                    { "topic_id": 86, "name": "Truth Tables construction" },
+                    { "topic_id": 87, "name": "Tautologies and Contradictions" },
+                    { "topic_id": 88, "name": "Logical Equivalence" }
+                  ]
+                },
+                {
+                  "section_number": "8.2",
+                  "topics": [
+                    { "topic_id": 89, "name": "Valid and Invalid Arguments" },
+                    { "topic_id": 90, "name": "Truth Table Proofs of Validity" }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade_id": 10,
+      "name": "Grade 10",
+      "subjects": [
+        {
+          "subject_id": 2,
+          "name": "Mathematics",
+          "units": [
+            {
+              "unit_id": 9,
+              "number": 1,
+              "name": "Relations and Functions",
+              "sections": [
+                {
+                  "section_number": "1.1",
+                  "topics": [
+                    { "topic_id": 91, "name": "Domain and Range of Inverse Relations" },
+                    { "topic_id": 92, "name": "Inverse Functions" }
+                  ]
+                },
+                {
+                  "section_number": "1.2",
+                  "topics": [
+                    { "topic_id": 93, "name": "Introduction to Composite Functions" },
+                    { "topic_id": 94, "name": "Evaluating Composite Functions" },
+                    { "topic_id": 95, "name": "Properties of Composites" }
+                  ]
+                }
+              ]
+            },
+            {
+              "unit_id": 10,
+              "number": 2,
+              "name": "Polynomial Functions",
+              "sections": [
+                {
+                  "section_number": "2.1",
+                  "topics": [
+                    { "topic_id": 96, "name": "Introduction to Polynomial Expressions" },
+                    { "topic_id": 97, "name": "Degree and Coefficients" }
+                  ]
+                },
+                {
+                  "section_number": "2.2",
+                  "topics": [
+                    { "topic_id": 98, "name": "Addition and Subtraction of Polynomials" },
+                    { "topic_id": 99, "name": "Multiplication of Polynomials" },
+                    { "topic_id": 100, "name": "Polynomial Division (Long Division)" },
+                    { "topic_id": 101, "name": "Synthetic Division" }
+                  ]
+                },
+                {
+                  "section_number": "2.3",
+                  "topics": [
+                    { "topic_id": 102, "name": "The Remainder Theorem" },
+                    { "topic_id": 103, "name": "The Factor Theorem" },
+                    { "topic_id": 104, "name": "Rational Root Theorem" },
+                    { "topic_id": 105, "name": "Zeros of Polynomials" },
+                    { "topic_id": 106, "name": "Factorization of Polynomials" }
+                  ]
+                },
+                {
+                  "section_number": "2.4",
+                  "topics": [
+                    { "topic_id": 107, "name": "Symmetry of Polynomial Graphs" },
+                    { "topic_id": 108, "name": "End Behavior of Graphs" },
+                    { "topic_id": 109, "name": "Turning Points" },
+                    { "topic_id": 110, "name": "Graphing Polynomial Functions" }
+                  ]
+                }
+              ]
+            },
+            {
+              "unit_id": 11,
+              "number": 3,
+              "name": "Exponential and Logarithmic Functions",
+              "sections": [
+                {
+                  "section_number": "3.1",
+                  "topics": [
+                    { "topic_id": 111, "name": "Definition of Exponential Functions" },
+                    { "topic_id": 112, "name": "Properties of Exponents" },
+                    { "topic_id": 113, "name": "Graphing Exponential Functions" },
+                    { "topic_id": 114, "name": "Solving Exponential Equations" }
+                  ]
+                },
+                {
+                  "section_number": "3.2",
+                  "topics": [
+                    { "topic_id": 115, "name": "Definition of Logarithmic Functions" },
+                    { "topic_id": 116, "name": "Laws of Logarithms" },
+                    { "topic_id": 117, "name": "Common and Natural Logarithms" },
+                    { "topic_id": 118, "name": "Graphing Logarithmic Functions" },
+                    { "topic_id": 119, "name": "Solving Logarithmic Equations" }
+                  ]
+                },
+                {
+                  "section_number": "3.3",
+                  "topics": [
+                    { "topic_id": 120, "name": "Applications - Growth and Decay" },
+                    { "topic_id": 121, "name": "Applications - Compound Interest" }
+                  ]
+                }
+              ]
+            },
+            {
+              "unit_id": 12,
+              "number": 4,
+              "name": "Trigonometric Functions",
+              "sections": [
+                {
+                  "section_number": "4.1",
+                  "topics": [
+                    { "topic_id": 122, "name": "Radian Measure" },
+                    { "topic_id": 123, "name": "Degree and Radian Conversions" },
+                    { "topic_id": 124, "name": "Arc Length and Sector Area" }
+                  ]
+                },
+                {
+                  "section_number": "4.2",
+                  "topics": [
+                    { "topic_id": 125, "name": "Sine, Cosine, Tangent Functions (Unit Circle)" },
+                    { "topic_id": 126, "name": "Secant, Cosecant, Cotangent Functions" },
+                    { "topic_id": 127, "name": "Trig Functions of Any Angle" },
+                    { "topic_id": 128, "name": "Graphs of Sine and Cosine" },
+                    { "topic_id": 129, "name": "Graphs of Tangent Function" },
+                    { "topic_id": 130, "name": "Amplitude, Period, Phase Shift" }
+                  ]
+                },
+                {
+                  "section_number": "4.3",
+                  "topics": [
+                    { "topic_id": 131, "name": "Pythagorean Identities" },
+                    { "topic_id": 132, "name": "Sum and Difference Formulas" },
+                    { "topic_id": 133, "name": "Double Angle Formulas" }
+                  ]
+                }
+              ]
+            },
+            {
+              "unit_id": 13,
+              "number": 5,
+              "name": "Circles",
+              "sections": [
+                {
+                  "section_number": "5.1",
+                  "topics": [
+                    { "topic_id": 134, "name": "Definitions of Circle Elements" },
+                    { "topic_id": 135, "name": "Chords and Chord Properties" },
+                    { "topic_id": 136, "name": "Tangents of a Circle" },
+                    { "topic_id": 137, "name": "Secant Segments" }
+                  ]
+                },
+                {
+                  "section_number": "5.2",
+                  "topics": [
+                    { "topic_id": 138, "name": "Central Angles and Inscribed Angles" },
+                    { "topic_id": 139, "name": "Angles Formed by Secants and Tangents" },
+                    { "topic_id": 140, "name": "Circle Geometry Proofs" }
+                  ]
+                }
+              ]
+            },
+            {
+              "unit_id": 14,
+              "number": 6,
+              "name": "Solid Geometry",
+              "sections": [
+                {
+                  "section_number": "6.1",
+                  "topics": [
+                    { "topic_id": 141, "name": "Properties of Prisms" },
+                    { "topic_id": 142, "name": "Surface Area of Prisms" },
+                    { "topic_id": 143, "name": "Volume of Prisms" },
+                    { "topic_id": 144, "name": "Properties of Cylinders" },
+                    { "topic_id": 145, "name": "Surface Area of Cylinders" },
+                    { "topic_id": 146, "name": "Volume of Cylinders" }
+                  ]
+                },
+                {
+                  "section_number": "6.2",
+                  "topics": [
+                    { "topic_id": 147, "name": "Properties of Pyramids" },
+                    { "topic_id": 148, "name": "Surface Area of Pyramids" },
+                    { "topic_id": 149, "name": "Volume of Pyramids" },
+                    { "topic_id": 150, "name": "Properties of Cones" },
+                    { "topic_id": 151, "name": "Surface Area of Cones" },
+                    { "topic_id": 152, "name": "Volume of Cones" }
+                  ]
+                },
+                {
+                  "section_number": "6.3",
+                  "topics": [
+                    { "topic_id": 153, "name": "Properties of Spheres" },
+                    { "topic_id": 154, "name": "Surface Area and Volume of Spheres" }
+                  ]
+                }
+              ]
+            },
+            {
+              "unit_id": 15,
+              "number": 7,
+              "name": "Coordinate Geometry",
+              "sections": [
+                {
+                  "section_number": "7.1",
+                  "topics": [
+                    { "topic_id": 155, "name": "The Distance Formula" },
+                    { "topic_id": 156, "name": "The Midpoint Formula" }
+                  ]
+                },
+                {
+                  "section_number": "7.2",
+                  "topics": [
+                    { "topic_id": 157, "name": "Slope of a Line" },
+                    { "topic_id": 158, "name": "Slope-Intercept Form" },
+                    { "topic_id": 159, "name": "Point-Slope Form" },
+                    { "topic_id": 160, "name": "General Form of Straight Line" },
+                    { "topic_id": 161, "name": "Parallel Lines Slopes" },
+                    { "topic_id": 162, "name": "Perpendicular Lines Slopes" }
+                  ]
+                },
+                {
+                  "section_number": "7.3",
+                  "topics": [
+                    { "topic_id": 163, "name": "Standard Equation of Circle" },
+                    { "topic_id": 164, "name": "General Equation of Circle" }
+                  ]
+                }
+              ]
+            },
+            {
+              "unit_id": 16,
+              "number": 8,
+              "name": "Mathematical Reasoning and Proofs",
+              "sections": [
+                {
+                  "section_number": "8.1",
+                  "topics": [
+                    { "topic_id": 165, "name": "Logical Arguments" },
+                    { "topic_id": 166, "name": "Valid and Invalid Arguments" },
+                    { "topic_id": 167, "name": "Direct Proofs" },
+                    { "topic_id": 168, "name": "Indirect Proofs / Contradiction" },
+                    { "topic_id": 169, "name": "Mathematical Induction" }
+                  ]
+                }
+              ]
+            },
+            {
+              "unit_id": 17,
+              "number": 9,
+              "name": "Statistics and Probability",
+              "sections": [
+                {
+                  "section_number": "9.1",
+                  "topics": [
+                    { "topic_id": 170, "name": "Measures of Dispersion - Grouped Data" },
+                    { "topic_id": 171, "name": "Standard Deviation of Grouped Data" },
+                    { "topic_id": 172, "name": "Variance of Grouped Data" }
+                  ]
+                },
+                {
+                  "section_number": "9.2",
+                  "topics": [
+                    { "topic_id": 173, "name": "Introduction to Permutations" },
+                    { "topic_id": 174, "name": "Introduction to Combinations" },
+                    { "topic_id": 175, "name": "The Binomial Theorem" },
+                    { "topic_id": 176, "name": "Bernoulli Trials" }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

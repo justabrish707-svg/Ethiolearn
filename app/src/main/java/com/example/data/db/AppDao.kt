@@ -87,4 +87,17 @@ interface AppDao {
     
     @Query("SELECT COUNT(*) FROM grades")
     suspend fun countGrades(): Int
+
+    @Query("SELECT * FROM progress WHERE topic_id = :topicId LIMIT 1")
+    suspend fun getProgressByTopicDirect(topicId: Int): Progress?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSearchFts(ftsItems: List<com.example.data.model.CurriculumSearchFts>)
+
+    @Query("""
+        SELECT t.* FROM topics t
+        INNER JOIN curriculum_search_fts ON t.id = curriculum_search_fts.topic_id
+        WHERE curriculum_search_fts MATCH :query
+    """)
+    fun searchTopicsFts(query: String): Flow<List<Topic>>
 }

@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val database = AppDatabase.getDatabase(this)
-        val repository = AppRepository(database.appDao())
+        val repository = AppRepository(database.appDao(), applicationContext)
         
         enableEdgeToEdge()
         setContent {

@@ -25,6 +25,8 @@ fun LessonScreen(viewModel: MainViewModel, topicId: Int, onBack: () -> Unit) {
     val practiceQuestions by viewModel.practiceQuestions.collectAsState()
     val quizQuestions by viewModel.quizQuestions.collectAsState()
     val topicProgress by viewModel.topicProgress.collectAsState()
+    val isGenerating by viewModel.isGenerating.collectAsState()
+    val generationError by viewModel.generationError.collectAsState()
 
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     var showAITutor by remember { mutableStateOf(false) }
@@ -112,20 +114,64 @@ fun LessonScreen(viewModel: MainViewModel, topicId: Int, onBack: () -> Unit) {
                                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
                             ) {
                                 Column(modifier = Modifier.padding(24.dp), horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
-                                    Text("Curriculum Lesson Pending", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onTertiaryContainer)
-                                    Spacer(modifier = Modifier.height(12.dp))
-                                    Text(
-                                        "Detailed text lessons and formulas for this topic are currently being prepared. You can ask our AI Tutor for answers, definitions, and step-by-step math explanations directly!",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                                    )
-                                    Spacer(modifier = Modifier.height(16.dp))
-                                    Button(
-                                        onClick = { showAITutor = true },
-                                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
-                                    ) {
-                                        Text("Ask AI Tutor Now")
+                                    if (isGenerating) {
+                                        CircularProgressIndicator(
+                                            color = MaterialTheme.colorScheme.tertiary,
+                                            modifier = Modifier.size(48.dp)
+                                        )
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                        Text(
+                                            "AI Tutor is drafting complete lesson materials...",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                        )
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        Text(
+                                            "Crafting comprehensive textbook Summary, Key Concepts, Formulas, examples, practice sheets, and quiz questions specifically for this topic...",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                        )
+                                    } else {
+                                        Text("Curriculum Lesson Pending", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onTertiaryContainer)
+                                        Spacer(modifier = Modifier.height(12.dp))
+                                        Text(
+                                            "Detailed text lessons and formulas for this topic are currently being prepared. You can instantly generate the full detailed lesson, step-by-step examples, practice exercises, and formal quizzes with our AI Tutor!",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                        )
+                                        
+                                        generationError?.let { err ->
+                                            Spacer(modifier = Modifier.height(12.dp))
+                                            Text(
+                                                err,
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.error,
+                                                fontWeight = FontWeight.Bold,
+                                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                            )
+                                        }
+                                        
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                        Button(
+                                            onClick = { viewModel.generateLessonForTopic(topicId) },
+                                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                                            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)
+                                        ) {
+                                            Text("Generate Lesson with AI")
+                                        }
+                                        
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        OutlinedButton(
+                                            onClick = { showAITutor = true },
+                                            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onTertiaryContainer),
+                                            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)
+                                        ) {
+                                            Text("Ask AI Tutor a Question")
+                                        }
                                     }
                                 }
                             }
@@ -140,20 +186,40 @@ fun LessonScreen(viewModel: MainViewModel, topicId: Int, onBack: () -> Unit) {
                                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
                             ) {
                                 Column(modifier = Modifier.padding(24.dp), horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
-                                    Text("Examples Coming Soon", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onTertiaryContainer)
-                                    Spacer(modifier = Modifier.height(12.dp))
-                                    Text(
-                                        "Step-by-step example equations and solutions for this topic are currently in development. Ask the AI Tutor for instant high-fidelity math examples!",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                                    )
-                                    Spacer(modifier = Modifier.height(16.dp))
-                                    Button(
-                                        onClick = { showAITutor = true },
-                                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
-                                    ) {
-                                        Text("Generate Examples with AI")
+                                    if (isGenerating) {
+                                        CircularProgressIndicator(color = MaterialTheme.colorScheme.tertiary)
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                        Text(
+                                            "AI Tutor is generating full lesson and step-by-step examples...",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                        )
+                                    } else {
+                                        Text("Examples Coming Soon", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onTertiaryContainer)
+                                        Spacer(modifier = Modifier.height(12.dp))
+                                        Text(
+                                            "Step-by-step example equations and solutions for this topic are currently in development. Ask the AI Tutor for instant high-fidelity math examples, or generate full curriculum materials!",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                        )
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                        Button(
+                                            onClick = { viewModel.generateLessonForTopic(topicId) },
+                                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Text("Generate Examples with AI")
+                                        }
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        OutlinedButton(
+                                            onClick = { showAITutor = true },
+                                            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onTertiaryContainer),
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Text("Ask AI Tutor")
+                                        }
                                     }
                                 }
                             }
@@ -191,20 +257,40 @@ fun LessonScreen(viewModel: MainViewModel, topicId: Int, onBack: () -> Unit) {
                                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
                             ) {
                                 Column(modifier = Modifier.padding(24.dp), horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
-                                    Text("Practice Problems Pending", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onTertiaryContainer)
-                                    Spacer(modifier = Modifier.height(12.dp))
-                                    Text(
-                                        "Interactive practice questions for this topic are being updated. Tap below to have the AI Tutor generate a math practice sheet for you!",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                                    )
-                                    Spacer(modifier = Modifier.height(16.dp))
-                                    Button(
-                                        onClick = { showAITutor = true },
-                                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
-                                    ) {
-                                        Text("Generate Practice with AI")
+                                    if (isGenerating) {
+                                        CircularProgressIndicator(color = MaterialTheme.colorScheme.tertiary)
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                        Text(
+                                            "AI Tutor is generating practice sheets specifically for this topic...",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                        )
+                                    } else {
+                                        Text("Practice Problems Pending", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onTertiaryContainer)
+                                        Spacer(modifier = Modifier.height(12.dp))
+                                        Text(
+                                            "Interactive practice questions for this topic are being updated. Tap below to have the AI Tutor generate a math practice sheet for you!",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                        )
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                        Button(
+                                            onClick = { viewModel.generateLessonForTopic(topicId) },
+                                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Text("Generate Practice with AI")
+                                        }
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        OutlinedButton(
+                                            onClick = { showAITutor = true },
+                                            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onTertiaryContainer),
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Text("Open AI Tutor Chat")
+                                        }
                                     }
                                 }
                             }
@@ -284,20 +370,40 @@ fun LessonScreen(viewModel: MainViewModel, topicId: Int, onBack: () -> Unit) {
                                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
                             ) {
                                 Column(modifier = Modifier.padding(24.dp), horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
-                                    Text("Quiz Questions Pending", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onTertiaryContainer)
-                                    Spacer(modifier = Modifier.height(12.dp))
-                                    Text(
-                                        "A formal quiz for this topic is pending curriculum verification. You can ask our AI Tutor to challenge you on this topic!",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                                    )
-                                    Spacer(modifier = Modifier.height(16.dp))
-                                    Button(
-                                        onClick = { showAITutor = true },
-                                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
-                                    ) {
-                                        Text("Start AI Challenge")
+                                    if (isGenerating) {
+                                        CircularProgressIndicator(color = MaterialTheme.colorScheme.tertiary)
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                        Text(
+                                            "AI Tutor is generating full multiple-choice quiz questions...",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                        )
+                                    } else {
+                                        Text("Quiz Questions Pending", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onTertiaryContainer)
+                                        Spacer(modifier = Modifier.height(12.dp))
+                                        Text(
+                                            "A formal quiz for this topic is pending curriculum verification. You can instantly generate multiple-choice quizzes with our AI Tutor!",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                        )
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                        Button(
+                                            onClick = { viewModel.generateLessonForTopic(topicId) },
+                                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Text("Generate Quiz with AI")
+                                        }
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        OutlinedButton(
+                                            onClick = { showAITutor = true },
+                                            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onTertiaryContainer),
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Text("Ask AI Tutor to Challenge You")
+                                        }
                                     }
                                 }
                             }

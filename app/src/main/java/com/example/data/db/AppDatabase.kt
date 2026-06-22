@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.data.model.CurriculumSearchFts
 import com.example.data.model.Example
 import com.example.data.model.Grade
 import com.example.data.model.Lesson
@@ -24,9 +25,10 @@ import com.example.data.model.UnitTable
         Example::class,
         PracticeQuestion::class,
         QuizQuestion::class,
-        Progress::class
+        Progress::class,
+        CurriculumSearchFts::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.model.*
 import com.example.data.repository.AppRepository
+import com.example.domain.AITutor
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -141,23 +142,101 @@ class MainViewModel(private val repository: AppRepository) : ViewModel() {
 
     fun markLessonCompleted(topicId: Int) {
         viewModelScope.launch {
-            val current = _topicProgress.value
-            if (current == null) {
-                repository.updateProgress(Progress(topic_id = topicId, completed_lessons = true))
-            } else {
-                repository.updateProgress(current.copy(completed_lessons = true))
+            repository.markTopicLessonCompleted(topicId)
+        }
+    }
+
+    private val _isGenerating = MutableStateFlow(false)
+    val isGenerating = _isGenerating.asStateFlow()
+
+    private val _generationError = MutableStateFlow<String?>(null)
+    val generationError = _generationError.asStateFlow()
+
+    private val aiTutor = AITutor()
+
+    fun generateLessonForTopic(topicId: Int) {
+        viewModelScope.launch {
+            _isGenerating.value = true
+            _generationError.value = null
+            try {
+                val topic = repository.getTopicById(topicId) ?: throw Exception("Topic not found")
+                val topicTitle = topic.title
+                val unitId = topic.unit_id
+                
+                val unit = repository.getUnitById(unitId)
+                val unitTitle = unit?.title ?: "Standard Unit"
+                val gradeId = if (unitId <= 8) 9 else 10
+                val gradeName = if (gradeId == 9) "Grade 9" else "Grade 10"
+                
+                val generated = aiTutor.generateCompleteCurriculumForTopic(topicTitle, unitTitle, gradeName)
+                if (generated != null) {
+                    val baseId = topicId * 1000
+                    
+                    val lesson = Lesson(
+                        id = baseId + 1,
+                        topic_id = topicId,
+                        summary = generated.summary,
+                        key_concepts = generated.key_concepts,
+                        important_notes = generated.important_notes,
+                        formulas = generated.formulas
+                    )
+                    
+                    val examplesList = generated.examples.mapIndexed { index, ex ->
+                        Example(
+                            id = baseId + index + 1,
+                            topic_id = topicId,
+                            question = ex.question,
+                            step_by_step_solution = ex.step_by_step_solution
+                        )
+                    }
+                    
+                    val practiceList = generated.practice_questions.mapIndexed { index, pq ->
+                        PracticeQuestion(
+                            id = baseId + index + 1,
+                            topic_id = topicId,
+                            difficulty = pq.difficulty,
+                            question = pq.question,
+                            correct_answer = pq.correct_answer,
+                            explanation = pq.explanation
+                        )
+                    }
+                    
+                    val json = kotlinx.serialization.json.Json
+                    val quizList = generated.quiz_questions.mapIndexed { index, qq ->
+                        val optionsJsonString = json.encodeToString(kotlinx.serialization.serializer<List<String>>(), qq.options)
+                        QuizQuestion(
+                            id = baseId + index + 1,
+                            topic_id = topicId,
+                            question = qq.question,
+                            options_json = optionsJsonString,
+                            correct_option_index = qq.correct_option_index
+                        )
+                    }
+                    
+                    repository.insertLesson(lesson)
+                    repository.insertExamples(examplesList)
+                    repository.insertPracticeQuestions(practiceList)
+                    repository.insertQuizQuestions(quizList)
+                    
+                    loadLesson(topicId)
+                    loadExamples(topicId)
+                    loadPracticeQuestions(topicId)
+                    loadQuizQuestions(topicId)
+                } else {
+                    _generationError.value = "Failed to generate lesson content from AI. Please check your internet connection or Gemini API key in the Secrets panel."
+                }
+            } catch (e: Exception) {
+                _generationError.value = "Error generating content: ${e.message}"
+            } finally {
+                _isGenerating.value = false
             }
         }
     }
 
     fun submitQuizScore(topicId: Int, score: Int) {
         viewModelScope.launch {
-            val current = _topicProgress.value
-            if (current == null) {
-                repository.updateProgress(Progress(topic_id = topicId, quiz_score = score))
-            } else if (score > current.quiz_score) {
-                repository.updateProgress(current.copy(quiz_score = score))
-            }
+            repository.saveQuizScore(topicId, score)
         }
     }
 }
+
