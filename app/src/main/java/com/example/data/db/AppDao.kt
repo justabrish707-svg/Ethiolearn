@@ -100,4 +100,10 @@ interface AppDao {
         WHERE curriculum_search_fts MATCH :query
     """)
     fun searchTopicsFts(query: String): Flow<List<Topic>>
+
+    @Query("SELECT * FROM units ORDER BY id ASC")
+    fun getAllUnits(): Flow<List<UnitTable>>
+
+    @Query("SELECT * FROM topics ORDER BY id ASC")
+    fun getAllTopics(): Flow<List<Topic>>
 }

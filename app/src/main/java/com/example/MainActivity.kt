@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val database = AppDatabase.getDatabase(this)
-        val repository = AppRepository(database.appDao(), applicationContext)
+        val repository = AppRepository(database, database.appDao(), applicationContext)
         
         enableEdgeToEdge()
         setContent {
@@ -46,7 +46,25 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onNavigateToLesson = { topicId ->
                                     navController.navigate("lesson/$topicId")
+                                },
+                                onNavigateToDashboard = {
+                                    navController.navigate("dashboard")
+                                },
+                                onNavigateToSearch = {
+                                    navController.navigate("search")
                                 }
+                            )
+                        }
+                        composable("dashboard") {
+                            DashboardScreen(viewModel, onBack = { navController.popBackStack() })
+                        }
+                        composable("search") {
+                            SearchScreen(
+                                viewModel = viewModel,
+                                onNavigateToLesson = { topicId ->
+                                    navController.navigate("lesson/$topicId")
+                                },
+                                onBack = { navController.popBackStack() }
                             )
                         }
                         composable(
@@ -81,7 +99,21 @@ class MainActivity : ComponentActivity() {
                             arguments = listOf(navArgument("topicId") { type = NavType.IntType })
                         ) { backStackEntry ->
                             val topicId = backStackEntry.arguments?.getInt("topicId") ?: 0
-                            LessonScreen(viewModel, topicId, onBack = { navController.popBackStack() })
+                            LessonScreen(
+                                viewModel = viewModel, 
+                                topicId = topicId, 
+                                onBack = { navController.popBackStack() },
+                                onNavigateToQuiz = { tid ->
+                                    navController.navigate("quiz/$tid")
+                                }
+                            )
+                        }
+                        composable(
+                            "quiz/{topicId}",
+                            arguments = listOf(navArgument("topicId") { type = NavType.IntType })
+                        ) { backStackEntry ->
+                            val topicId = backStackEntry.arguments?.getInt("topicId") ?: 0
+                            QuizScreen(viewModel = viewModel, topicId = topicId, onBack = { navController.popBackStack() })
                         }
                     }
                 }

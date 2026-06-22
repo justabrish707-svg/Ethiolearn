@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Assistant
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.domain.AITutor
@@ -19,7 +20,12 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LessonScreen(viewModel: MainViewModel, topicId: Int, onBack: () -> Unit) {
+fun LessonScreen(
+    viewModel: MainViewModel, 
+    topicId: Int, 
+    onBack: () -> Unit,
+    onNavigateToQuiz: (Int) -> Unit
+) {
     val currentLesson by viewModel.currentLesson.collectAsState()
     val examples by viewModel.examples.collectAsState()
     val practiceQuestions by viewModel.practiceQuestions.collectAsState()
@@ -357,59 +363,65 @@ fun LessonScreen(viewModel: MainViewModel, topicId: Int, onBack: () -> Unit) {
                         }
                     }
                 }
-                3 -> {
-                    if (quizQuestions.isNotEmpty()) {
-                        QuizGauntlet(
-                            questions = quizQuestions,
-                            onSubmitScore = { score -> viewModel.submitQuizScore(topicId, score) }
-                        )
-                    } else {
-                        Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = androidx.compose.ui.Alignment.Center) {
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
-                            ) {
-                                Column(modifier = Modifier.padding(24.dp), horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
-                                    if (isGenerating) {
-                                        CircularProgressIndicator(color = MaterialTheme.colorScheme.tertiary)
-                                        Spacer(modifier = Modifier.height(16.dp))
-                                        Text(
-                                            "AI Tutor is generating full multiple-choice quiz questions...",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                                        )
-                                    } else {
-                                        Text("Quiz Questions Pending", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onTertiaryContainer)
-                                        Spacer(modifier = Modifier.height(12.dp))
-                                        Text(
-                                            "A formal quiz for this topic is pending curriculum verification. You can instantly generate multiple-choice quizzes with our AI Tutor!",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                                        )
-                                        Spacer(modifier = Modifier.height(16.dp))
-                                        Button(
-                                            onClick = { viewModel.generateLessonForTopic(topicId) },
-                                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                                            modifier = Modifier.fillMaxWidth()
-                                        ) {
-                                            Text("Generate Quiz with AI")
-                                        }
-                                        Spacer(modifier = Modifier.height(8.dp))
-                                        OutlinedButton(
-                                            onClick = { showAITutor = true },
-                                            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onTertiaryContainer),
-                                            modifier = Modifier.fillMaxWidth()
-                                        ) {
-                                            Text("Ask AI Tutor to Challenge You")
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                 3 -> {
+                     Box(
+                         modifier = Modifier.fillMaxSize().padding(16.dp),
+                         contentAlignment = androidx.compose.ui.Alignment.Center
+                     ) {
+                         Card(
+                             modifier = Modifier.fillMaxWidth().testTag("quiz_launch_card"),
+                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                         ) {
+                             Column(
+                                 modifier = Modifier.padding(24.dp),
+                                 horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+                             ) {
+                                 Text(
+                                     "10-Question Progress Quiz",
+                                     style = MaterialTheme.typography.titleLarge,
+                                     fontWeight = FontWeight.Bold,
+                                     color = MaterialTheme.colorScheme.onPrimaryContainer
+                                 )
+                                 Spacer(modifier = Modifier.height(8.dp))
+                                 Text(
+                                     "Challenge yourself with 10 random mathematics questions from the offline practice curriculum. Achieve a high score to log progress inside the SQLite database!",
+                                     style = MaterialTheme.typography.bodyMedium,
+                                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
+                                     textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                 )
+                                 
+                                 topicProgress?.let { prog ->
+                                     if (prog.quiz_score > 0) {
+                                         Spacer(modifier = Modifier.height(16.dp))
+                                         Surface(
+                                             color = MaterialTheme.colorScheme.primary,
+                                             shape = RoundedCornerShape(12.dp)
+                                         ) {
+                                             Text(
+                                                 "Highest Registered Score: ${prog.quiz_score}%",
+                                                 style = MaterialTheme.typography.labelLarge,
+                                                 color = MaterialTheme.colorScheme.onPrimary,
+                                                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                                             )
+                                         }
+                                     }
+                                 }
+                                 
+                                 Spacer(modifier = Modifier.height(24.dp))
+                                 Button(
+                                     onClick = { onNavigateToQuiz(topicId) },
+                                     modifier = Modifier
+                                         .fillMaxWidth()
+                                         .heightIn(min = 48.dp)
+                                         .testTag("start_progress_quiz_button"),
+                                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                                 ) {
+                                     Text("Begin Quiz Now", fontWeight = FontWeight.Bold)
+                                 }
+                             }
+                         }
+                     }
+                 }
             }
         }
         

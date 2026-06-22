@@ -1,134 +1,33 @@
-package com.example.data.repository
+package com.example.data.db
 
 import android.content.Context
-import com.example.data.db.AppDao
+import android.util.Log
+import androidx.room.withTransaction
 import com.example.data.model.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.serialization.Serializable
+import com.example.data.repository.CurriculumJsonDto
+import kotlinx.serialization.json.Json
 
-@Serializable
-data class CurriculumJsonDto(
-    val grades: List<GradeDto>
-)
-
-@Serializable
-data class GradeDto(
-    val grade_id: Int,
-    val name: String,
-    val subjects: List<SubjectDto>
-)
-
-@Serializable
-data class SubjectDto(
-    val subject_id: Int,
-    val name: String,
-    val units: List<UnitDto>
-)
-
-@Serializable
-data class UnitDto(
-    val unit_id: Int,
-    val number: Int,
-    val name: String,
-    val sections: List<SectionDto>
-)
-
-@Serializable
-data class SectionDto(
-    val section_number: String,
-    val topics: List<TopicDto>
-)
-
-@Serializable
-data class TopicDto(
-    val topic_id: Int,
-    val name: String
-)
-
-class AppRepository(
-    val database: com.example.data.db.AppDatabase,
-    val appDao: AppDao,
-    val context: Context
+class DatabaseSeeder(
+    private val database: AppDatabase,
+    private val context: Context
 ) {
+    private val appDao = database.appDao()
 
-    val grades: Flow<List<Grade>> = appDao.getGrades()
-
-    fun getSubjectsByGrade(gradeId: Int): Flow<List<Subject>> = appDao.getSubjectsByGrade(gradeId)
-
-    fun getUnitsBySubject(subjectId: Int): Flow<List<UnitTable>> = appDao.getUnitsBySubject(subjectId)
-
-    fun getTopicsByUnit(unitId: Int): Flow<List<Topic>> = appDao.getTopicsByUnit(unitId)
-
-    fun searchTopics(query: String): Flow<List<Topic>> {
-        val sanitizedQuery = query.trim().split("\\s+".toRegex())
-            .filter { it.isNotEmpty() }
-            .joinToString(" ") { "$it*" }
-        return if (sanitizedQuery.isEmpty()) {
-            flowOf(emptyList())
-        } else {
-            appDao.searchTopicsFts(sanitizedQuery)
+    /**
+     * Seeds the local SQLite database prepopulated grades, units, topics, lessons, examples, etc.
+     * Encapsulated within a single Room `withTransaction` block to guarantee atomicity during launch.
+     */
+    suspend fun seedDatabaseAtomically() {
+        if (appDao.countGrades() > 0) {
+            Log.d("DatabaseSeeder", "Database already seeded. Skipping seeder transaction.")
+            return
         }
-    }
 
-    suspend fun getTopicById(topicId: Int): Topic? = appDao.getTopicById(topicId)
-    
-    suspend fun getUnitById(unitId: Int): UnitTable? = appDao.getUnitById(unitId)
-
-    fun getLessonByTopic(topicId: Int): Flow<Lesson?> = appDao.getLessonByTopic(topicId)
-
-    fun getExamplesByTopic(topicId: Int): Flow<List<Example>> = appDao.getExamplesByTopic(topicId)
-
-    fun getPracticeQuestionsByTopic(topicId: Int): Flow<List<PracticeQuestion>> = appDao.getPracticeQuestionsByTopic(topicId)
-
-    fun getQuizQuestionsByTopic(topicId: Int): Flow<List<QuizQuestion>> = appDao.getQuizQuestionsByTopic(topicId)
-    
-    fun getAllUnits(): Flow<List<UnitTable>> = appDao.getAllUnits()
-
-    fun getAllTopics(): Flow<List<Topic>> = appDao.getAllTopics()
-    
-    fun getAllProgress(): Flow<List<Progress>> = appDao.getAllProgress()
-
-    fun getProgressByTopic(topicId: Int): Flow<Progress?> = appDao.getProgressByTopic(topicId)
-
-    suspend fun getProgressByTopicDirect(topicId: Int): Progress? = appDao.getProgressByTopicDirect(topicId)
-
-    suspend fun updateProgress(progress: Progress) {
-        appDao.insertProgress(progress)
-    }
-
-    suspend fun markTopicLessonCompleted(topicId: Int) {
-        val currentProgress = appDao.getProgressByTopicDirect(topicId)
-        if (currentProgress != null) {
-            appDao.insertProgress(currentProgress.copy(completed_lessons = true, timestamp = System.currentTimeMillis()))
-        } else {
-            appDao.insertProgress(Progress(topic_id = topicId, completed_lessons = true))
-        }
-    }
-
-    suspend fun saveQuizScore(topicId: Int, score: Int) {
-        val currentProgress = appDao.getProgressByTopicDirect(topicId)
-        if (currentProgress != null) {
-            val maxScore = maxOf(currentProgress.quiz_score, score)
-            appDao.insertProgress(currentProgress.copy(quiz_score = maxScore, timestamp = System.currentTimeMillis()))
-        } else {
-            appDao.insertProgress(Progress(topic_id = topicId, quiz_score = score))
-        }
-    }
-
-    suspend fun initializePrepopulatedData() {
-        if (appDao.countGrades() == 0) {
-            com.example.data.db.DatabaseSeeder(
-                database,
-                context
-            ).seedDatabaseAtomically()
-        }
-    }
-
-    suspend fun initializeFromCurriculumJson() {
+        Log.d("DatabaseSeeder", "Initiating atomic database prepopulation flow...")
+        
         try {
             val jsonString = context.assets.open("curriculum.json").bufferedReader().use { it.readText() }
-            val format = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
+            val format = Json { ignoreUnknownKeys = true }
             val data = format.decodeFromString<CurriculumJsonDto>(jsonString)
             
             val dbGrades = mutableListOf<Grade>()
@@ -147,7 +46,6 @@ class AppRepository(
                         for (sec in u.sections) {
                             for (t in sec.topics) {
                                 dbTopics.add(Topic(t.topic_id, u.unit_id, sec.section_number, t.name))
-                                // Populate Fts5 virtual search database parameters
                                 dbFts.add(
                                     CurriculumSearchFts(
                                         rowid = ftsIdCounter++,
@@ -162,27 +60,32 @@ class AppRepository(
                     }
                 }
             }
+
+            // Execute EVERYTHING inside a single SQLite atomic database transaction block
+            database.withTransaction {
+                appDao.insertGrades(dbGrades)
+                appDao.insertSubjects(dbSubjects)
+                appDao.insertUnits(dbUnits)
+                appDao.insertTopics(dbTopics)
+                appDao.insertSearchFts(dbFts)
+                
+                // Seed associated lessons, worked examples, practice, and quiz questions dynamically
+                seedLessonsAndQuestions(dbTopics, dbUnits)
+            }
             
-            appDao.insertGrades(dbGrades)
-            appDao.insertSubjects(dbSubjects)
-            appDao.insertUnits(dbUnits)
-            appDao.insertTopics(dbTopics)
-            appDao.insertSearchFts(dbFts)
-            
-            // Invoke the comprehensive seed script to populate detailed content fallback for all topics
-            seedAllLessonsAndQuestions(dbTopics, dbUnits)
+            Log.d("DatabaseSeeder", "Database prepopulated and atomic transaction committed successfully!")
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("DatabaseSeeder", "Error during atomic database seeding transaction: rollback executed", e)
+            throw e
         }
     }
 
-    private suspend fun seedAllLessonsAndQuestions(topics: List<Topic>, units: List<UnitTable>) {
+    private suspend fun seedLessonsAndQuestions(topics: List<Topic>, units: List<UnitTable>) {
         val lessonsToSeed = mutableListOf<Lesson>()
         val examplesToSeed = mutableListOf<Example>()
         val practiceToSeed = mutableListOf<PracticeQuestion>()
         val quizToSeed = mutableListOf<QuizQuestion>()
 
-        // Maps unitId to unit title details for dynamic template tailoring
         val unitMap = units.associateBy { it.id }
 
         for (topic in topics) {
@@ -313,7 +216,6 @@ class AppRepository(
                     quizToSeed.addAll(quiz)
                 }
                 else -> {
-                    // Seed dynamic elegant falling-back lesson and quiz details for all other 171 pending topics
                     lessonsToSeed.add(generateDynamicLesson(topic, unitTitle))
                     examplesToSeed.add(generateDynamicExample(topic))
                     practiceToSeed.add(generateDynamicPracticeQuestion(topic))
@@ -330,8 +232,6 @@ class AppRepository(
 
     private fun generateDynamicLesson(topic: Topic, unitTitle: String): Lesson {
         val topicTitle = topic.title
-        val section = topic.section
-        
         val summary: String
         val keyConcepts: String
         val importantNotes: String
@@ -495,21 +395,5 @@ class AppRepository(
                 correct_option_index = 0
             )
         )
-    }
-
-    suspend fun insertLesson(lesson: Lesson) {
-        appDao.insertLessons(listOf(lesson))
-    }
-
-    suspend fun insertExamples(examples: List<Example>) {
-        appDao.insertExamples(examples)
-    }
-
-    suspend fun insertPracticeQuestions(questions: List<PracticeQuestion>) {
-        appDao.insertPracticeQuestions(questions)
-    }
-
-    suspend fun insertQuizQuestions(questions: List<QuizQuestion>) {
-        appDao.insertQuizQuestions(questions)
     }
 }

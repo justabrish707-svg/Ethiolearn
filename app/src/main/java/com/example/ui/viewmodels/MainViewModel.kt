@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.data.model.*
 import com.example.data.repository.AppRepository
 import com.example.domain.AITutor
+import com.example.domain.SearchService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -47,11 +48,29 @@ class MainViewModel(private val repository: AppRepository) : ViewModel() {
     private val _searchResults = MutableStateFlow<List<Topic>>(emptyList())
     val searchResults = _searchResults.asStateFlow()
 
+    val progressRepository = com.example.data.repository.ProgressRepository(repository.appDao)
+
+    private val _allUnits = MutableStateFlow<List<UnitTable>>(emptyList())
+    val allUnits = _allUnits.asStateFlow()
+
+    private val _allTopics = MutableStateFlow<List<Topic>>(emptyList())
+    val allTopics = _allTopics.asStateFlow()
+
     init {
         viewModelScope.launch {
             repository.initializePrepopulatedData()
             repository.grades.collectLatest { 
                 _grades.value = it 
+            }
+        }
+        viewModelScope.launch {
+            repository.getAllUnits().collectLatest {
+                _allUnits.value = it
+            }
+        }
+        viewModelScope.launch {
+            repository.getAllTopics().collectLatest {
+                _allTopics.value = it
             }
         }
     }
@@ -128,12 +147,14 @@ class MainViewModel(private val repository: AppRepository) : ViewModel() {
         }
     }
 
+    private val searchService = SearchService(repository)
+
     fun search(query: String) {
         viewModelScope.launch {
             if (query.trim().isEmpty()) {
                 _searchResults.value = emptyList()
             } else {
-                repository.searchTopics(query).collectLatest {
+                searchService.searchOfflineCurriculum(query).collectLatest {
                     _searchResults.value = it
                 }
             }

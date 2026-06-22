@@ -29,7 +29,7 @@ class DatabaseValidationTest {
         database = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java)
             .allowMainThreadQueries()
             .build()
-        repository = AppRepository(database.appDao(), context)
+        repository = AppRepository(database, database.appDao(), context)
     }
 
     @After
