@@ -106,4 +106,37 @@ interface AppDao {
 
     @Query("SELECT * FROM topics ORDER BY id ASC")
     fun getAllTopics(): Flow<List<Topic>>
+
+    @Query("SELECT * FROM subjects ORDER BY id ASC")
+    fun getAllSubjects(): Flow<List<Subject>>
+
+    @Query("SELECT * FROM subjects WHERE id = :subjectId LIMIT 1")
+    suspend fun getSubjectById(subjectId: Int): Subject?
+
+    @Query("DELETE FROM grades")
+    suspend fun clearGrades()
+
+    @Query("DELETE FROM subjects")
+    suspend fun clearSubjects()
+
+    @Query("DELETE FROM units")
+    suspend fun clearUnits()
+
+    @Query("DELETE FROM topics")
+    suspend fun clearTopics()
+
+    @Query("DELETE FROM lessons")
+    suspend fun clearLessons()
+
+    @Query("DELETE FROM examples")
+    suspend fun clearExamples()
+
+    @Query("DELETE FROM practice_questions")
+    suspend fun clearPracticeQuestions()
+
+    @Query("DELETE FROM quiz_questions")
+    suspend fun clearQuizQuestions()
+
+    @Query("DELETE FROM curriculum_search_fts")
+    suspend fun clearFts()
 }

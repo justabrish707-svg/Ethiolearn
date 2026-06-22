@@ -1,0 +1,451 @@
+9	Amharic	Unit 1: ማዳመጥ እና መናገር	1.1 ማዳመጥ	የማዳመጥ ክህሎቶች
+9	Amharic	Unit 1: ማዳመጥ እና መናገር	1.2 መናገር	የንግግር ክህሎቶች
+9	Amharic	Unit 2: ንባብ	2.1 ምንባብ ክህሎቶች	የተለያዩ ጽሁፎችን ማንበብ
+9	Amharic	Unit 2: ንባብ	2.2 ቃላት	ቃላትን መረዳት
+9	Amharic	Unit 3: ጽሕፈት	3.1 የጽሕፈት ዓይነቶች	አጫጭር ድርሰቶች
+9	Amharic	Unit 4: ሰዋሰው	4.1 ሰዋሰው	የአማርኛ ሰዋሰው
+9	Amharic	Unit 5: ሥነ ጽሑፍ	5.1 ሥነ ጽሑፍ	ግጥምና ፕሮዝ
+9	Amharic	Unit 6: ቋንቋ	6.1 ቋንቋና ማኅበረሰብ	ቋንቋ እና ባህል
+9	Amharic	Unit 7: ንግግር	7.1 ሐሳብ ማቅረብ	ሕዝባዊ ንግግር
+9	Amharic	Unit 8: ጽሕፈት	8.1 ምርምር ጽሁፍ	ምርምር ጽሁፍ ማዘጋጀት
+9	Amharic	Unit 9: ቃላትና ሰዋሰው	9.1 ቃላት	ቃላት ዘርፍ እና አሃዛዊ ትርጉም
+9	Biology	Unit 1: Introduction to Biology	1.1 Definition, Scope & Applications	Definition, Scope, and Applications of Biology
+9	Biology	Unit 1: Introduction to Biology	1.2 Scientific Method	Scientific Method and Biological Investigations
+9	Biology	Unit 1: Introduction to Biology	1.3 Tools and Equipment	Tools and Equipment Used in Biology
+9	Biology	Unit 2: Cell Biology	2.1 Cell Theory	Cell Theory and History
+9	Biology	Unit 2: Cell Biology	2.2 Cell Structure	Structure and Function of Cells
+9	Biology	Unit 2: Cell Biology	2.3 Cell Processes	Diffusion, Osmosis and Active Transport
+9	Biology	Unit 3: Reproduction	3.1 Asexual Reproduction	Mechanisms of Asexual Reproduction
+9	Biology	Unit 3: Reproduction	3.2 Sexual Reproduction	Mechanisms of Sexual Reproduction
+9	Biology	Unit 3: Reproduction	3.3 Cell Division	Mitosis and Meiosis
+9	Biology	Unit 4: Health and Nutrition	4.1 Human Nutrition	Nutrients and Balanced Diet
+9	Biology	Unit 4: Health and Nutrition	4.2 Diseases	Infectious and Non-Infectious Diseases
+9	Biology	Unit 4: Health and Nutrition	4.3 Prevention	Disease Prevention and Control
+9	Biology	Unit 5: Ecology	5.1 Ecosystems	Components and Types of Ecosystems
+9	Biology	Unit 5: Ecology	5.2 Food Chains	Food Chains and Food Webs
+9	Biology	Unit 5: Ecology	5.3 Ecological Interactions	Ecological Interactions and Cycles
+9	Biology	Unit 6: Classification	6.1 Taxonomy	Taxonomic Classification of Living Things
+9	Biology	Unit 6: Classification	6.2 Kingdoms	The Five / Six Kingdoms of Life
+9	Biology	Unit 6: Classification	6.3 Local Biodiversity	Ethiopian Biodiversity and Conservation
+9	Chemistry	Unit 1: Introduction to Chemistry	1.1 Definition & Scope	Definition, Scope and Interrelationships of Chemistry
+9	Chemistry	Unit 1: Introduction to Chemistry	1.2 Chemistry in Industry	Applications of Chemistry in Ethiopia
+9	Chemistry	Unit 1: Introduction to Chemistry	1.3 Measurement	Measurement and Units in Chemistry
+9	Chemistry	Unit 2: Atomic Structure	2.1 Atomic Theory	Historical Development of Atomic Theory
+9	Chemistry	Unit 2: Atomic Structure	2.2 Subatomic Particles	Protons, Neutrons and Electrons
+9	Chemistry	Unit 2: Atomic Structure	2.3 Isotopes	Isotopes and Relative Atomic Mass
+9	Chemistry	Unit 3: The Periodic Table	3.1 History of the Periodic Table	Mendeleev's Classification and Modern Periodic Table
+9	Chemistry	Unit 3: The Periodic Table	3.2 Periodic Trends	Atomic Size, Ionization Energy, Electronegativity
+9	Chemistry	Unit 3: The Periodic Table	3.3 Groups and Periods	Properties of Groups and Periods
+9	Chemistry	Unit 4: Chemical Bonding	4.1 Ionic Bonding	Formation of Ionic Bonds and Properties of Ionic Compounds
+9	Chemistry	Unit 4: Chemical Bonding	4.2 Covalent Bonding	Formation of Covalent Bonds and Polarity
+9	Chemistry	Unit 4: Chemical Bonding	4.3 Metallic Bonding	Nature of Metallic Bonding
+9	Chemistry	Unit 5: Chemical Reactions	5.1 Chemical Laws	Fundamental Laws of Chemical Reactions
+9	Chemistry	Unit 5: Chemical Reactions	5.2 Equations	Writing and Balancing Chemical Equations
+9	Chemistry	Unit 5: Chemical Reactions	5.3 Types of Reactions	Types of Chemical Reactions
+9	Citizenship Education	Unit 1: Ethical Values	1.1 Major Ethical Values	Understanding and Appreciating Ethical Values
+9	Citizenship Education	Unit 2: Digital Technology	2.1 Culture of Digital Technology	Ethical Use of Digital Technology
+9	Citizenship Education	Unit 3: Constitution	3.1 Constitution and Constitutionalism	Principles of Constitutional Governance
+9	Citizenship Education	Unit 4: Indigenous Knowledge	4.1 Indigenous Knowledge	Value and Application of Indigenous Knowledge
+9	Citizenship Education	Unit 5: Multiculturalism	5.1 Cultural Diversity	Diversity, Multiculturalism, and National Unity
+9	Citizenship Education	Unit 6: Unity in Diversity	6.1 Managing Diversity	Accommodation of Diversity in Ethiopia
+9	Citizenship Education	Unit 7: Problem-Solving Skills	7.1 Problem-Solving	Critical Thinking and Problem-Solving Skills
+9	Citizenship Education	Unit 8: Foreign Relations	8.1 Ethiopia in East Africa	Ethiopia's Foreign Relations in East Africa
+9	Economics	Unit 1: Introduction to Economics	1.1 Basic Concepts	Definition, Scope and Basic Concepts of Economics
+9	Economics	Unit 1: Introduction to Economics	1.2 Economic Systems	Types of Economic Systems
+9	Economics	Unit 2: Demand and Supply	2.1 Demand	Law of Demand and Demand Curve
+9	Economics	Unit 2: Demand and Supply	2.2 Supply	Law of Supply and Supply Curve
+9	Economics	Unit 2: Demand and Supply	2.3 Market Equilibrium	Market Equilibrium and Price Determination
+9	Economics	Unit 3: Production	3.1 Factors of Production	Land, Labour, Capital and Entrepreneurship
+9	Economics	Unit 3: Production	3.2 Production Costs	Fixed, Variable and Total Costs
+9	Economics	Unit 4: Market Structures	4.1 Competition	Perfect and Imperfect Competition
+9	Economics	Unit 4: Market Structures	4.2 Monopoly	Monopoly and Oligopoly
+9	Economics	Unit 5: Money and Banking	5.1 Money	Functions and Types of Money
+9	Economics	Unit 5: Money and Banking	5.2 Banking	Commercial Banks and the National Bank
+9	Economics	Unit 6: National Income	6.1 GDP and GNP	Measures of National Income
+9	Economics	Unit 7: Economic Development	7.1 Development Goals	Economic Growth and Development in Ethiopia
+9	Economics	Unit 8: International Trade	8.1 Trade	Exports, Imports and Trade Policy
+9	English for Ethiopia	Unit 1: City Life	1.1 Urbanization	Urban Opportunities and Challenges
+9	English for Ethiopia	Unit 2: Learning Strategies	2.1 Study Skills	Note-taking, Summarizing and Organizing Ideas
+9	English for Ethiopia	Unit 3: Road Safety	3.1 Traffic Safety	Road Safety Vocabulary and Dialogues
+9	English for Ethiopia	Unit 4: Environment	4.1 Environmental Issues	Climate and Environmental Protection
+9	English for Ethiopia	Unit 5: Technology	5.1 Digital Literacy	Internet Benefits, Risks and Online Communication
+9	English for Ethiopia	Unit 6: Health	6.1 Health and Wellbeing	Health Issues and Personal Wellbeing
+9	English for Ethiopia	Unit 7: Culture	7.1 Ethiopian Culture	Cultural Identity and Traditions
+9	English for Ethiopia	Unit 8: Work and Career	8.1 Career Guidance	Career Pathways and Goal Setting
+9	English for Ethiopia	Unit 9: Rights and Responsibilities	9.1 Civic Responsibility	Rights, Duties and Citizenship
+9	English for Ethiopia	Unit 10: Global Issues	10.1 World Issues	Globalization and International Cooperation
+9	Geography	Unit 1: Introduction to Geography	1.1 Geography as a Science	Definition, Scope and Branches of Geography
+9	Geography	Unit 1: Introduction to Geography	1.2 Geographic Skills	Map Reading, GIS and Remote Sensing
+9	Geography	Unit 2: Physical Geography of Ethiopia	2.1 Location and Size	Ethiopia's Location, Size and Shape
+9	Geography	Unit 2: Physical Geography of Ethiopia	2.2 Geology and Topography	Geological History and Topographic Features
+9	Geography	Unit 3: Climate and Vegetation	3.1 Climate	Climatic Regions of Ethiopia
+9	Geography	Unit 3: Climate and Vegetation	3.2 Vegetation and Wildlife	Vegetation Zones and Wildlife of Ethiopia
+9	Geography	Unit 4: Water Resources	4.1 Drainage	Rivers, Lakes and Drainage Systems
+9	Geography	Unit 5: Soil and Minerals	5.1 Soil	Soil Types and Conservation
+9	Geography	Unit 5: Soil and Minerals	5.2 Minerals	Mineral Resources of Ethiopia
+9	Geography	Unit 6: Human Geography	6.1 Population	Population Distribution and Growth
+9	Geography	Unit 6: Human Geography	6.2 Settlement	Rural and Urban Settlements
+9	Geography	Unit 7: Economic Activities	7.1 Agriculture	Agriculture and Land Use
+9	Geography	Unit 7: Economic Activities	7.2 Industry and Trade	Industrial and Trade Activities
+9	Geography	Unit 8: Environment and Development	8.1 Human-Environment Interaction	Sustainable Development and Conservation
+9	Health & Physical Education	Unit 1: Personal Health	1.1 Personal Hygiene	Hygiene and Health Practices
+9	Health & Physical Education	Unit 2: Nutrition	2.1 Diet and Nutrition	Balanced Diet and Nutritional Needs
+9	Health & Physical Education	Unit 3: Physical Fitness	3.1 Fitness Components	Health-Related Fitness Components
+9	Health & Physical Education	Unit 3: Physical Fitness	3.2 Exercise	Exercise Principles and Training
+9	Health & Physical Education	Unit 4: Sports Skills	4.1 Athletics	Track and Field Skills
+9	Health & Physical Education	Unit 4: Sports Skills	4.2 Team Games	Football, Basketball, Volleyball
+9	Health & Physical Education	Unit 5: Safety	5.1 First Aid	Basic First Aid and Emergency Response
+9	Health & Physical Education	Unit 6: Disease Prevention	6.1 Communicable Diseases	Prevention of Communicable Diseases
+9	Health & Physical Education	Unit 7: Mental Health	7.1 Emotional Wellbeing	Mental Health and Stress Management
+9	Health & Physical Education	Unit 8: Community Health	8.1 Environmental Health	Community and Environmental Health
+9	History	Unit 1: Introduction to History	1.1 Nature of History	Definition, Scope and Sources of History
+9	History	Unit 2: Early Human History	2.1 Human Origins	Human Origins and Prehistoric Life
+9	History	Unit 2: Early Human History	2.2 Early Civilizations	Early Civilizations of the World
+9	History	Unit 3: Ancient Africa	3.1 African Civilizations	Ancient Civilizations of Africa
+9	History	Unit 4: Ancient Ethiopia	4.1 Aksumite Empire	The Aksumite Empire and Its Legacy
+9	History	Unit 5: Medieval History	5.1 Medieval Kingdoms	Medieval Kingdoms of Ethiopia
+9	History	Unit 6: Trade and Contact	6.1 Trade and Contact	Trade Routes and Early Contacts
+9	History	Unit 7: Colonialism	7.1 Scramble for Africa	European Colonialism in Africa
+9	History	Unit 7: Colonialism	7.2 Ethiopian Resistance	Ethiopian Resistance and the Battle of Adwa
+9	History	Unit 8: Modern Ethiopia	8.1 20th-Century Ethiopia	Ethiopia in the 20th Century
+9	History	Unit 9: Contemporary Issues	9.1 Modern Africa	Post-Independence Africa and Ethiopia
+9	Information Technology	Unit 1: Introduction to ICT	1.1 Overview of ICT	Definition, History and Importance of ICT
+9	Information Technology	Unit 1: Introduction to ICT	1.2 ICT in Society	Applications of ICT in Daily Life
+9	Information Technology	Unit 2: Computer Hardware	2.1 Computer Components	Input, Output, Processing and Storage Devices
+9	Information Technology	Unit 2: Computer Hardware	2.2 Computer Systems	Types of Computers and System Architecture
+9	Information Technology	Unit 3: Operating Systems	3.1 OS Concepts	Functions and Types of Operating Systems
+9	Information Technology	Unit 3: Operating Systems	3.2 Using an OS	File Management and OS Operations
+9	Information Technology	Unit 4: Word Processing	4.1 Document Creation	Creating and Formatting Documents
+9	Information Technology	Unit 4: Word Processing	4.2 Advanced Features	Tables, Mail Merge and Templates
+9	Information Technology	Unit 5: Spreadsheets	5.1 Spreadsheet Basics	Creating and Formatting Spreadsheets
+9	Information Technology	Unit 5: Spreadsheets	5.2 Formulas and Functions	Using Formulas, Functions and Charts
+9	Information Technology	Unit 6: Internet and Safety	6.1 Internet Basics	Internet Services and Web Browsing
+9	Information Technology	Unit 6: Internet and Safety	6.2 Cyber Safety	Online Safety and Digital Ethics
+9	Physics	Unit 1: Nature of Physics	1.1 Definition and Scope	Definition, Nature and History of Physics
+9	Physics	Unit 1: Nature of Physics	1.2 Physics and Other Sciences	Relationship Between Physics and Other Sciences
+9	Physics	Unit 1: Nature of Physics	1.3 Measurement	Physical Quantities, Units and Measurement
+9	Physics	Unit 2: Motion	2.1 Kinematics	Displacement, Velocity and Acceleration
+9	Physics	Unit 2: Motion	2.2 Newton's Laws	Newton's Laws of Motion
+9	Physics	Unit 2: Motion	2.3 Work, Energy and Power	Work, Energy, Power and Conservation
+9	Physics	Unit 3: Simple Machines	3.1 Machines	Classification and Mechanical Advantage of Machines
+9	Physics	Unit 3: Simple Machines	3.2 Efficiency	Velocity Ratio and Efficiency
+9	Physics	Unit 4: Waves	4.1 Wave Properties	Wave Characteristics and Types
+9	Physics	Unit 4: Waves	4.2 Sound Waves	Sound Waves and Their Properties
+9	Physics	Unit 4: Waves	4.3 Wave Phenomena	Superposition and Resonance
+9	Physics	Unit 5: Temperature	5.1 Temperature Measurement	Thermometric Scales and Thermometers
+9	Physics	Unit 5: Temperature	5.2 Thermal Expansion	Thermal Expansion of Solids, Liquids and Gases
+9	Physics	Unit 6: Electricity	6.1 Electric Current	Electric Charge, Current and Circuits
+9	Physics	Unit 6: Electricity	6.2 Ohm's Law	Resistance, Ohm's Law and Power
+9	Physics	Unit 7: Magnetism	7.1 Magnets	Properties of Magnets and Magnetic Fields
+9	Physics	Unit 7: Magnetism	7.2 Electromagnetism	Electromagnetic Induction
+10	Amharic	Unit 1: ማዳመጥ እና ንግግር	1.1 ማዳመጥ	የማዳመጥ ክህሎቶች
+10	Amharic	Unit 2: ንባብ	2.1 ምንባብ	ዓይነቶች ምንባቦችን ማንበብ
+10	Amharic	Unit 3: ጽሕፈት	3.1 ድርሰት	ፐርሷሲቭ ጽሑፍ
+10	Amharic	Unit 4: ሰዋሰው	4.1 ሰዋሰዋዊ ዕውቀት	ሰዋሰው ጥናት
+10	Amharic	Unit 5: ሥነ ጽሑፍ	5.1 ሥነ ጽሑፍ ዓይነቶች	ልቦለዶች፣ ግጥሞች፣ ተውኔቶች
+10	Amharic	Unit 6: ቋንቋ ክህሎቶች	6.1 ቋንቋ ዕድገት	ቃላት ዘርፍ እና አጠቃቀም
+10	Amharic	Unit 7: ንግግር ክህሎቶች	7.1 ሕዝባዊ ንግግር	ክርክርና ውይይት
+10	Amharic	Unit 8: ምርምር ጽሁፍ	8.1 ምርምር	ምርምር አቀራረብ
+10	Amharic	Unit 9: የአፃፃፍ ስልቶች	9.1 አፃፃፍ	ዘዴያዊ አፃፃፍ
+10	Biology	Unit 1: Biotechnology	1.1 Introduction to Biotechnology	Definition, History and Applications of Biotechnology
+10	Biology	Unit 1: Biotechnology	1.2 Genetic Engineering	Recombinant DNA Technology
+10	Biology	Unit 2: Heredity and Genetics	2.1 Mendelian Genetics	Mendel's Laws of Inheritance
+10	Biology	Unit 2: Heredity and Genetics	2.2 Chromosomes and Genes	Chromosomal Theory of Inheritance
+10	Biology	Unit 2: Heredity and Genetics	2.3 Molecular Genetics	DNA, RNA and Protein Synthesis
+10	Biology	Unit 3: Human Biology	3.1 Digestive System	Human Digestive System
+10	Biology	Unit 3: Human Biology	3.2 Circulatory System	Human Circulatory and Respiratory Systems
+10	Biology	Unit 3: Human Biology	3.3 Nervous System	Nervous and Endocrine Systems
+10	Biology	Unit 4: Plant Biology	4.1 Plant Growth	Plant Growth, Development and Hormones
+10	Biology	Unit 4: Plant Biology	4.2 Photosynthesis	Photosynthesis and Respiration in Plants
+10	Biology	Unit 5: Conservation	5.1 Biodiversity	Biodiversity and Conservation in Ethiopia
+10	Biology	Unit 5: Conservation	5.2 Natural Resources	Conservation of Natural Resources
+10	Biology	Unit 6: Ecology	6.1 Ecosystems	Advanced Ecosystems and Environmental Issues
+10	Biology	Unit 6: Ecology	6.2 Human Impact	Human Impact on the Environment
+10	Chemistry	Unit 1: Chemical Reactions	1.1 Reaction Types	Chemical Equations and Types of Reactions
+10	Chemistry	Unit 1: Chemical Reactions	1.2 Oxidation-Reduction	Redox Reactions and Mole Concept
+10	Chemistry	Unit 2: Stoichiometry	2.1 Quantitative Chemistry	Stoichiometry of Reactions
+10	Chemistry	Unit 3: Solutions	3.1 Types of Mixtures	Homogeneous and Heterogeneous Mixtures
+10	Chemistry	Unit 3: Solutions	3.2 Solution Chemistry	Solubility, Concentration and Solution Stoichiometry
+10	Chemistry	Unit 4: Acids, Bases and Salts	4.1 Properties	Acids, Bases and Salts: Properties and Reactions
+10	Chemistry	Unit 5: Electrochemistry	5.1 Energy in Reactions	Electrochemical Cells and Energy Changes
+10	Chemistry	Unit 6: Organic Chemistry	6.1 Hydrocarbons	Alkanes, Alkenes and Alkynes
+10	Chemistry	Unit 6: Organic Chemistry	6.2 Functional Groups	Functional Groups and Organic Reactions
+10	Citizenship Education	Unit 1: Democracy	1.1 Democratic Principles	Principles and Practice of Democracy
+10	Citizenship Education	Unit 2: Rule of Law	2.1 Constitution	Constitution and Rule of Law
+10	Citizenship Education	Unit 3: Human Rights	3.1 Rights	Human Rights and Freedoms
+10	Citizenship Education	Unit 4: Justice	4.1 Social Justice	Equality, Equity and Social Justice
+10	Citizenship Education	Unit 5: Patriotism	5.1 National Identity	Patriotism and National Identity
+10	Citizenship Education	Unit 6: Responsibility	6.1 Civic Duties	Responsibilities of Citizens
+10	Citizenship Education	Unit 7: Active Citizenship	7.1 Community Participation	Community Service and Participation
+10	Citizenship Education	Unit 8: Global Citizenship	8.1 International Relations	Ethiopia and Global Citizenship
+10	Economics	Unit 1: Markets	1.1 Market Structures	Perfect Competition and Monopoly
+10	Economics	Unit 2: Consumer Behavior	2.1 Utility	Utility Theory and Consumer Choice
+10	Economics	Unit 3: Production Theory	3.1 Production	Production Functions and Returns to Scale
+10	Economics	Unit 4: Government Role	4.1 Fiscal Policy	Government Revenue, Spending and Taxation
+10	Economics	Unit 5: Money and Inflation	5.1 Monetary Policy	Money Supply, Inflation and Monetary Policy
+10	Economics	Unit 6: National Income	6.1 Macroeconomics	GDP, Economic Growth and Business Cycles
+10	Economics	Unit 7: International Trade	7.1 Trade Theory	Comparative Advantage and Trade Policy
+10	Economics	Unit 8: Ethiopian Economy	8.1 Development	Ethiopian Economic Development and Challenges
+10	English for Ethiopia	Unit 1: Education	1.1 Academic Skills	Academic Reading and Writing
+10	English for Ethiopia	Unit 2: Science and Technology	2.1 STEM Topics	Reading about Science and Technology
+10	English for Ethiopia	Unit 3: Environment	3.1 Eco-Issues	Environmental Texts and Arguments
+10	English for Ethiopia	Unit 4: Culture and Arts	4.1 Culture	Ethiopian and World Cultures
+10	English for Ethiopia	Unit 5: Health	5.1 Health Issues	Medical and Health Vocabulary
+10	English for Ethiopia	Unit 6: Business	6.1 Workplace English	Business Communication Skills
+10	English for Ethiopia	Unit 7: History	7.1 Historical Texts	Reading Historical Narratives
+10	English for Ethiopia	Unit 8: Sports	8.1 Sports Topics	Sports Vocabulary and Discussion
+10	English for Ethiopia	Unit 9: Media	9.1 Media Literacy	Evaluating Media and News
+10	English for Ethiopia	Unit 10: Future Planning	10.1 Career and Goals	Career Planning and Personal Essays
+10	Geography	Unit 1: Africa: Physical Geography	1.1 African Landforms	Major Landforms of Africa
+10	Geography	Unit 2: Africa: Climate and Vegetation	2.1 Climate Zones	Climatic Regions and Vegetation of Africa
+10	Geography	Unit 3: Natural Resources	3.1 Resources of Africa	Natural Resources and Their Management
+10	Geography	Unit 4: Population	4.1 African Population	Population Growth and Distribution in Africa
+10	Geography	Unit 5: Settlement	5.1 Urbanisation	Urbanisation in Africa
+10	Geography	Unit 6: Agriculture	6.1 Farming Systems	Agricultural Systems in Africa
+10	Geography	Unit 7: Industry and Trade	7.1 Industry	Industrial Development and Trade in Africa
+10	Geography	Unit 8: GIS and Environmental Issues	8.1 Technology in Geography	GIS, Remote Sensing and Environmental Issues
+10	Health & Physical Education	Unit 1: Fitness	1.1 Physical Fitness	Advanced Fitness Training
+10	Health & Physical Education	Unit 2: Team Sports	2.1 Ball Games	Advanced Team Game Skills
+10	Health & Physical Education	Unit 3: Athletics	3.1 Track and Field	Advanced Athletics Skills
+10	Health & Physical Education	Unit 4: Gymnastics	4.1 Gymnastics	Basic Gymnastics Skills
+10	Health & Physical Education	Unit 5: Health Education	5.1 Adolescent Health	Adolescent Health Issues
+10	Health & Physical Education	Unit 6: Nutrition	6.1 Diet Planning	Sports Nutrition and Diet Planning
+10	Health & Physical Education	Unit 7: Safety and First Aid	7.1 Emergency Care	Advanced First Aid Techniques
+10	Health & Physical Education	Unit 8: Community Health	8.1 Public Health	Environmental and Community Health
+10	History	Unit 1: World History Review	1.1 Ancient Civilizations	Review of Ancient World Civilizations
+10	History	Unit 2: Medieval Period	2.1 Medieval World	Medieval Kingdoms and Empires
+10	History	Unit 3: Ethiopia: Medieval Period	3.1 Medieval Ethiopia	Zagwe and Solomonic Dynasties
+10	History	Unit 4: Age of Revolution	4.1 Revolutions	Industrial and French Revolutions
+10	History	Unit 5: Imperialism	5.1 Colonialism	European Imperialism and Colonialism in Africa
+10	History	Unit 6: Ethiopian Resistance	6.1 Anti-Colonial Struggle	Ethiopian Resistance to Colonialism
+10	History	Unit 7: World Wars	7.1 WW I and WW II	Causes and Consequences of World Wars
+10	History	Unit 8: Post-War Ethiopia	8.1 Modern Ethiopia	Post-War Ethiopian History
+10	History	Unit 9: Africa After Independence	9.1 Decolonization	African Independence Movements
+10	Information Technology	Unit 1: Advanced Office Applications	1.1 Presentations	Creating Presentations with Software
+10	Information Technology	Unit 2: Database Management	2.1 Databases	Introduction to Database Management Systems
+10	Information Technology	Unit 3: Networking	3.1 Computer Networks	Types of Networks and Network Protocols
+10	Information Technology	Unit 4: Internet Services	4.1 Advanced Internet	Email, Cloud Computing and Online Collaboration
+10	Information Technology	Unit 5: Multimedia	5.1 Multimedia	Creating and Editing Multimedia Content
+10	Information Technology	Unit 6: Programming Basics	6.1 Algorithms	Algorithms, Flowcharts and Basic Programming
+10	Physics	Unit 1: Vectors	1.1 Scalars and Vectors	Scalar and Vector Quantities, Vector Addition and Resolution
+10	Physics	Unit 2: Kinematics	2.1 Motion	Uniformly Accelerated Motion and Equations of Motion
+10	Physics	Unit 3: Elasticity and Equilibrium	3.1 Elasticity	Elasticity, Density and Static Equilibrium
+10	Physics	Unit 4: Fluid Mechanics	4.1 Fluids	Pressure in Fluids, Buoyancy and Fluid Flow
+10	Physics	Unit 5: Thermodynamics	5.1 Heat and Temperature	Heat Transfer and Laws of Thermodynamics
+10	Physics	Unit 6: Electromagnetic Waves and Optics	6.1 Light and Optics	Reflection, Refraction, Lenses and Optical Instruments
+11	Amharic	Unit 1: ሥነ ጽሑፍ	1.1 ሥነ ጽሑፍ ትንተና	ሥነ ጽሑፍ ትንተናና ትችት
+11	Amharic	Unit 2: ቋንቋ	2.1 ቋንቋ ጥናት	ቋንቋ፣ ሐሳብና ኅብረተሰብ
+11	Amharic	Unit 3: ሥነ ቃል	3.1 ሥነ ቃል	የአማርኛ ሥነ ቃሎች
+11	Amharic	Unit 4: ንባብ	4.1 ምሁራዊ ንባብ	ውስብስብ ጽሑፎችን ማንበብ
+11	Amharic	Unit 5: ጽሕፈት	5.1 ምርምር ጽሑፍ	ምሁራዊ ጽሑፍ
+11	Amharic	Unit 6: ሕዝባዊ ንግግር	6.1 ንግግር	ሕዝባዊ ንግግርና ሚዲያ
+11	Amharic	Unit 7: ሰዋሰው	7.1 ሰዋሰው	ሰዋሰው ጥናት
+11	Amharic	Unit 8: ስሜቶች	8.1 ስነ ልቦናዊ ቋንቋ	ቋንቋ እና ስሜት
+11	Amharic	Unit 9: ፖለቲካዊ ቋንቋ	9.1 ፖለቲካ	ዜና እና ፕሮፓጋንዳ
+11	Agriculture	Unit 1: Introduction to Agriculture	1.1 Overview	Importance and Branches of Agriculture
+11	Agriculture	Unit 2: Soil Science	2.1 Soil	Soil Composition, Types and Fertility
+11	Agriculture	Unit 3: Crop Production	3.1 Field Crops	Cereal, Pulse and Oil Crop Production
+11	Agriculture	Unit 4: Horticulture	4.1 Vegetables and Fruits	Vegetable and Fruit Production
+11	Agriculture	Unit 5: Farm Animal Management	5.1 Livestock	Cattle, Sheep and Goat Management
+11	Agriculture	Unit 6: Poultry	6.1 Poultry Production	Poultry Breeds and Management
+11	Agriculture	Unit 7: Fisheries	7.1 Aquaculture	Fisheries and Aquaculture
+11	Agriculture	Unit 8: Beekeeping	8.1 Apiculture	Beekeeping and Honey Production
+11	Agriculture	Unit 9: Natural Resources	9.1 Conservation	Natural Resource Conservation
+11	Agriculture	Unit 10: Climate Change	10.1 Adaptation	Agriculture and Climate Change Adaptation
+11	Agriculture	Unit 11: Agricultural Economics	11.1 Farm Management	Farm Planning and Economics
+11	Agriculture	Unit 12: Biotechnology	12.1 Agri-Biotech	Biotechnology in Agriculture
+11	Agriculture	Unit 13: Agro-Processing	13.1 Value Addition	Post-Harvest Handling and Agro-Processing
+11	Agriculture	Unit 14: Nutrition	14.1 Food and Nutrition	Food Safety and Nutrition
+11	Agriculture	Unit 15: ICT in Agriculture	15.1 Digital Agriculture	Use of ICT in Modern Farming
+11	Agriculture	Unit 16: Entrepreneurship	16.1 Agri-Business	Agricultural Entrepreneurship
+11	Biology	Unit 1: Applications of Biology	1.1 Applied Biology	Biotechnology, Medicine and Industry
+11	Biology	Unit 2: Microorganisms	2.1 Microbiology	Types, Roles and Control of Microorganisms
+11	Biology	Unit 3: Energy Transformation	3.1 Metabolism	Photosynthesis and Cellular Respiration
+11	Biology	Unit 4: Evolution	4.1 Theory of Evolution	Evidence and Mechanisms of Evolution
+11	Biology	Unit 5: Human Body Systems	5.1 Body Systems	Advanced Human Body Systems
+11	Biology	Unit 6: Climate Change	6.1 Ecology and Climate	Impact of Climate Change on Biodiversity
+11	Chemistry	Unit 1: Acid-Base Equilibria	1.1 Equilibrium	Acid-Base Theories and Buffer Solutions
+11	Chemistry	Unit 2: Electrochemistry	2.1 Electrochemical Cells	Galvanic and Electrolytic Cells
+11	Chemistry	Unit 3: Industrial Chemistry	3.1 Industries	Industrial Production of Chemicals
+11	Chemistry	Unit 4: Polymers	4.1 Macromolecules	Natural and Synthetic Polymers
+11	Chemistry	Unit 5: Environmental Chemistry	5.1 Pollution	Air, Water and Soil Pollution
+11	Citizenship Education	Unit 1: Ethiopian Constitution	1.1 Constitution	Ethiopian Constitution and Federal Structure
+11	Citizenship Education	Unit 2: Human Rights	2.1 Rights	International Human Rights Standards
+11	Citizenship Education	Unit 3: Justice and Law	3.1 Legal System	Ethiopian Legal System and Justice
+11	Citizenship Education	Unit 4: Environmental Ethics	4.1 Sustainability	Environmental Ethics and Sustainability
+11	Citizenship Education	Unit 5: Media Literacy	5.1 Critical Media	Critical Media Consumption
+11	Citizenship Education	Unit 6: Leadership	6.1 Leadership	Leadership Qualities and Ethics
+11	Citizenship Education	Unit 7: Conflict Resolution	7.1 Peace	Conflict Resolution and Peacebuilding
+11	Citizenship Education	Unit 8: Global Issues	8.1 International	Ethiopia and the International Community
+11	Economics	Unit 1: Microeconomics Review	1.1 Market Forces	Advanced Demand, Supply and Elasticity
+11	Economics	Unit 2: Cost and Revenue	2.1 Firm Theory	Revenue, Costs and Profit Maximization
+11	Economics	Unit 3: Market Failure	3.1 Externalities	Market Failure, Public Goods and Externalities
+11	Economics	Unit 4: Macroeconomics	4.1 Aggregate Economy	Aggregate Demand, Supply and National Income
+11	Economics	Unit 5: Money and Banking	5.1 Financial System	Financial Institutions and Monetary Policy
+11	Economics	Unit 6: Fiscal Policy	6.1 Government Budget	Taxation, Government Spending and Budget
+11	Economics	Unit 7: International Trade	7.1 Trade Policy	Balance of Payments and Exchange Rates
+11	Economics	Unit 8: Ethiopian Economy	8.1 Development Policy	Ethiopian Development Plans and Policy
+11	English for Ethiopia	Unit 1: Academic Writing	1.1 Essays	Academic Essay Writing
+11	English for Ethiopia	Unit 2: Research Skills	2.1 Research	Research Methodology and Citation
+11	English for Ethiopia	Unit 3: Literature	3.1 Literary Texts	Analyzing Literary Texts
+11	English for Ethiopia	Unit 4: Critical Thinking	4.1 Arguments	Evaluating Arguments and Reasoning
+11	English for Ethiopia	Unit 5: Science Communication	5.1 STEM English	Reading and Writing about Science
+11	English for Ethiopia	Unit 6: Debates	6.1 Formal Speaking	Debates and Presentations
+11	English for Ethiopia	Unit 7: Society and Culture	7.1 Social Issues	Discussing Social and Cultural Issues
+11	English for Ethiopia	Unit 8: Technology	8.1 Tech Language	Technology Vocabulary and Texts
+11	English for Ethiopia	Unit 9: Economy	9.1 Business English	Business and Economic Texts
+11	English for Ethiopia	Unit 10: Global Issues	10.1 Global Topics	Global Challenges and Solutions
+11	Geography	Unit 1: World Physical Geography	1.1 Continents	Major Physical Features of the World
+11	Geography	Unit 2: World Climate	2.1 Climate Zones	World Climate Zones and Biomes
+11	Geography	Unit 3: World Population	3.1 Demographics	Global Population Trends and Migration
+11	Geography	Unit 4: World Resources	4.1 Resources	Natural Resources and Global Trade
+11	Geography	Unit 5: African Issues	5.1 African Development	Development Challenges in Africa
+11	Geography	Unit 6: Globalization	6.1 Global Economy	Globalization and its Effects
+11	Geography	Unit 7: Geospatial Technology	7.1 GIS and RS	GIS, Remote Sensing and GPS
+11	Health & Physical Education	Unit 1: Lifetime Fitness	1.1 Fitness Planning	Designing a Personal Fitness Plan
+11	Health & Physical Education	Unit 2: Sports	2.1 Advanced Sports	Advanced Skills in Major Sports
+11	Health & Physical Education	Unit 3: Body Systems	3.1 Anatomy	Anatomy and Physiology for Sport
+11	Health & Physical Education	Unit 4: Nutrition	4.1 Sports Nutrition	Advanced Sports Nutrition
+11	Health & Physical Education	Unit 5: Mental Health	5.1 Wellbeing	Mental Wellbeing and Resilience
+11	Health & Physical Education	Unit 6: Disease	6.1 Non-communicable Diseases	NCDs and Prevention
+11	Health & Physical Education	Unit 7: Environment	7.1 Environmental Health	Environmental Factors and Health
+11	Health & Physical Education	Unit 8: Leadership in Sport	8.1 Sports Leadership	Coaching and Leadership
+11	History	Unit 1: Ancient World	1.1 Civilizations	Ancient World Civilizations
+11	History	Unit 2: Medieval World	2.1 Medieval Empires	Medieval Empires and Kingdoms
+11	History	Unit 3: Age of Discovery	3.1 Exploration	Age of Exploration and Trade
+11	History	Unit 4: Revolutions	4.1 Political Revolutions	American, French and Industrial Revolutions
+11	History	Unit 5: Colonialism and Nationalism	5.1 Imperialism	Imperialism and Nationalism in Africa and Asia
+11	History	Unit 6: Ethiopia in the 19th–20th Century	6.1 Modern Ethiopia	Ethiopian History: Reform and Resistance
+11	History	Unit 7: World Wars	7.1 Wars	World War I and World War II
+11	History	Unit 8: Cold War	8.1 Cold War Era	Cold War and Its Global Impact
+11	History	Unit 9: Contemporary Africa	9.1 Independence	African Decolonization and Nation Building
+11	Information Technology	Unit 1: Advanced Programming	1.1 Programming	Structured Programming Concepts
+11	Information Technology	Unit 2: Web Development	2.1 Web Design	HTML, CSS and Basic Web Design
+11	Information Technology	Unit 3: Database Systems	3.1 DBMS	Relational Databases and SQL
+11	Information Technology	Unit 4: Network Security	4.1 Cybersecurity	Network Security and Cyber Threats
+11	Information Technology	Unit 5: E-Commerce	5.1 Online Business	E-Commerce and Digital Business
+11	Information Technology	Unit 6: Emerging Technologies	6.1 New Tech	AI, IoT and Emerging Technologies
+11	Mathematics	Unit 1: Further on Relations and Functions	1.1 Functions	Domain, Range, Inverse and Composite Functions
+11	Mathematics	Unit 2: Rational Expressions and Equations	2.1 Rational Expressions	Simplification and Operations
+11	Mathematics	Unit 3: Quadratic Functions and Equations	3.1 Quadratic Functions	Graphs, Vertex Form, Discriminant
+11	Mathematics	Unit 4: Exponential and Logarithmic Functions	4.1 Exp/Log	Graphs, Properties and Equations
+11	Mathematics	Unit 5: Sequences and Series	5.1 Sequences	Arithmetic and Geometric Sequences and Series
+11	Mathematics	Unit 6: Introduction to Calculus	6.1 Limits	Limits and Continuity
+11	Mathematics	Unit 6: Introduction to Calculus	6.2 Derivatives	Derivatives and Applications
+11	Mathematics	Unit 7: Statistics and Probability	7.1 Statistics	Measures of Dispersion and Sampling
+11	Mathematics	Unit 7: Statistics and Probability	7.2 Probability	Probability Distributions
+11	Mathematics	Unit 8: Matrices and Transformations	8.1 Matrices	Matrix Operations and Transformations
+11	Physics	Unit 1: Physics and Society	1.1 Role of Physics	Importance of Physics in Society and Technology
+11	Physics	Unit 2: Vectors	2.1 Vector Operations	Vector Addition, Subtraction and Products in 2D
+11	Physics	Unit 3: Kinematics and Dynamics	3.1 Motion	Uniformly Accelerated Motion and Circular Motion
+11	Physics	Unit 4: Work, Energy and Power	4.1 Energy	Work-Energy Theorem and Conservation of Energy
+11	Physics	Unit 5: Electricity and Magnetism	5.1 Electrostatics	Electric Fields, Capacitance and Magnetism
+11	Physics	Unit 6: Optics	6.1 Wave Optics	Interference, Diffraction and Polarization
+11	Physics	Unit 7: Nuclear Physics	7.1 Radioactivity	Nucleus, Radioactivity and Nuclear Reactions
+12	Amharic	Unit 1: ሥነ ጽሑፍ ትንተና	1.1 ትንታኔ	የሥነ ጽሑፍ ትንተና ዘዴዎች
+12	Amharic	Unit 2: ቋንቋ ፍልስፍና	2.1 ቋንቋ	ቋንቋ እና ሐሳብ
+12	Amharic	Unit 3: ሕዝባዊ ንግግር	3.1 ምሁራዊ ንግግር	ምሁራዊ ንግግርና ክርክር
+12	Amharic	Unit 4: ጥናታዊ ጽሑፍ	4.1 ምርምር	ሙሉ ጥናታዊ ጽሑፍ
+12	Amharic	Unit 5: ሥነ ቃሎች	5.1 ሥነ ቃሎች	ሥነ ቃሎች ትንተናና ምርምር
+12	Amharic	Unit 6: ስደት እና ቋንቋ	6.1 ቋንቋ ለውጥ	ቋንቋ ለውጥ እና ስደት
+12	Amharic	Unit 7: ፖለቲካና ሚዲያ	7.1 ሚዲያ	ሚዲያ ቋንቋና ፖለቲካ
+12	Amharic	Unit 8: ፍልስፍናዊ ጽሑፍ	8.1 ፍልስፍና	ፍልስፍናዊ ጽሑፍ ትንተና
+12	Amharic	Unit 9: ቃል አቀባዊ ሐሳቦች	9.1 አፃፃፍ	ጥበባዊ አጻጻፍ
+12	Agriculture	Unit 1: Advanced Crop Production	1.1 Crops	Advanced Crop Production Techniques
+12	Agriculture	Unit 2: Soil Fertility Management	2.1 Soil	Fertilizers and Soil Fertility
+12	Agriculture	Unit 3: Pest Management	3.1 Pest Control	Integrated Pest Management (IPM)
+12	Agriculture	Unit 4: Irrigation	4.1 Water Management	Irrigation Systems and Water Management
+12	Agriculture	Unit 5: Farm Machinery	5.1 Mechanization	Agricultural Machinery and Mechanization
+12	Agriculture	Unit 6: Animal Production	6.1 Livestock	Advanced Livestock Production
+12	Agriculture	Unit 7: Animal Health	7.1 Veterinary	Animal Health and Disease Control
+12	Agriculture	Unit 8: Fisheries	8.1 Fish Farming	Advanced Fisheries Management
+12	Agriculture	Unit 9: Forestry	9.1 Agroforestry	Agroforestry and Forest Management
+12	Agriculture	Unit 10: Agricultural Research	10.1 Research	Agricultural Research Methods
+12	Agriculture	Unit 11: Climate-Smart Agriculture	11.1 Smart Farming	Climate-Smart Agricultural Practices
+12	Agriculture	Unit 12: Food Security	12.1 Food Systems	Food Security and Safety
+12	Agriculture	Unit 13: Rural Development	13.1 Development	Agricultural Extension and Rural Development
+12	Agriculture	Unit 14: Agricultural Policy	14.1 Policy	Agricultural Policy in Ethiopia
+12	Agriculture	Unit 15: Market and Trade	15.1 Marketing	Agricultural Marketing and Value Chains
+12	Agriculture	Unit 16: Entrepreneurship	16.1 Agri-Business	Agricultural Enterprise Development
+12	Biology	Unit 1: Applications of Biology	1.1 Applied Biology	Medical, Industrial and Environmental Applications
+12	Biology	Unit 2: Microorganisms	2.1 Advanced Microbiology	Pathogenic and Beneficial Microorganisms
+12	Biology	Unit 3: Energy Transformation	3.1 Advanced Metabolism	Enzyme Kinetics and Metabolic Pathways
+12	Biology	Unit 4: Evolution	4.1 Advanced Evolution	Speciation, Phylogeny and Evolutionary Mechanisms
+12	Biology	Unit 5: Human Body Systems	5.1 Advanced Physiology	Homeostasis and Body System Integration
+12	Biology	Unit 6: Climate Change	6.1 Global Ecology	Climate Change Impact on Ecosystems and Biodiversity
+12	Chemistry	Unit 1: Acid-Base Equilibria	1.1 Equilibrium	Advanced Acid-Base Equilibria and Buffers
+12	Chemistry	Unit 2: Electrochemistry	2.1 Electrochemical Cells	Advanced Electrochemistry
+12	Chemistry	Unit 3: Industrial Chemistry	3.1 Chemical Industry	Industrial Processes and Green Chemistry
+12	Chemistry	Unit 4: Polymers	4.1 Polymers	Polymer Science and Applications
+12	Chemistry	Unit 5: Environmental Chemistry	5.1 Environmental Issues	Pollution and Environmental Protection
+12	Citizenship Education	Unit 1: Ethiopian Constitution	1.1 Advanced Constitutional Study	FDRE Constitution in Depth
+12	Citizenship Education	Unit 2: Governance	2.1 Federal System	Ethiopian Federal Government Structure
+12	Citizenship Education	Unit 3: Justice System	3.1 Courts	Ethiopian Judicial System
+12	Citizenship Education	Unit 4: Civic Engagement	4.1 Participation	Active Citizenship and Civic Engagement
+12	Citizenship Education	Unit 5: International Law	5.1 Global Law	International Law and Human Rights
+12	Citizenship Education	Unit 6: Ethics in Society	6.1 Applied Ethics	Applied Ethics in Modern Society
+12	Citizenship Education	Unit 7: Economic Citizenship	7.1 Financial Literacy	Financial Literacy and Economic Rights
+12	Citizenship Education	Unit 8: Global Citizenship	8.1 Global Responsibility	Ethiopia and Global Responsibilities
+12	Economics	Unit 1: Advanced Microeconomics	1.1 Price Theory	Advanced Price Theory and Market Analysis
+12	Economics	Unit 2: Advanced Macroeconomics	2.1 Growth Theory	Economic Growth Models
+12	Economics	Unit 3: Development Economics	3.1 Development	Theories and Strategies of Development
+12	Economics	Unit 4: Public Finance	4.1 Government Finance	Public Revenue, Expenditure and Debt
+12	Economics	Unit 5: International Economics	5.1 Trade	Trade Theory, Policy and Global Finance
+12	Economics	Unit 6: Ethiopian Economic Policy	6.1 Policy	Ethiopian Economic Reform and Development Plans
+12	English for Ethiopia	Unit 1: Academic Research	1.1 Research Writing	Extended Academic Research Writing
+12	English for Ethiopia	Unit 2: Critical Analysis	2.1 Analysis	Critical Analysis of Texts and Arguments
+12	English for Ethiopia	Unit 3: Literature	3.1 Advanced Literature	Advanced Literary Analysis
+12	English for Ethiopia	Unit 4: Speeches and Presentations	4.1 Public Speaking	Formal Speeches and Presentations
+12	English for Ethiopia	Unit 5: Science and Ethics	5.1 Ethics in Language	Language of Science and Ethics
+12	English for Ethiopia	Unit 6: Economics and Finance	6.1 Financial English	Economic and Financial Texts
+12	English for Ethiopia	Unit 7: Law and Rights	7.1 Legal English	Legal Texts and Rights Language
+12	English for Ethiopia	Unit 8: Global Culture	8.1 Intercultural	Intercultural Communication
+12	English for Ethiopia	Unit 9: Digital Communication	9.1 Digital Texts	Digital and Social Media Communication
+12	English for Ethiopia	Unit 10: Future Career	10.1 Professional English	Professional Communication and CVs
+12	Geography	Unit 1: World Economic Geography	1.1 Economic Geography	Major Economic Regions of the World
+12	Geography	Unit 2: Resources and Trade	2.1 Global Resources	Global Resource Distribution and Trade
+12	Geography	Unit 3: Geopolitics	3.1 Political Geography	Political Geography and International Relations
+12	Geography	Unit 4: Development Geography	4.1 Development	Development Indicators and Global Inequality
+12	Geography	Unit 5: Environment and Sustainability	5.1 Sustainability	Environmental Sustainability Strategies
+12	Geography	Unit 6: Urban Geography	6.1 Cities	Urban Systems and Mega-Cities
+12	Geography	Unit 7: Ethiopia in the World	7.1 Ethiopia	Ethiopia's Role in Regional and Global Affairs
+12	Health & Physical Education	Unit 1: Health Promotion	1.1 Wellness	Lifelong Health and Wellness
+12	Health & Physical Education	Unit 2: Advanced Sports	2.1 Performance	Sports Performance and Coaching
+12	Health & Physical Education	Unit 3: Sports Science	3.1 Exercise Science	Biomechanics and Sports Physiology
+12	Health & Physical Education	Unit 4: Public Health	4.1 Community Health	Community Health Promotion
+12	Health & Physical Education	Unit 5: Nutrition	5.1 Clinical Nutrition	Clinical Nutrition and Dietetics Basics
+12	Health & Physical Education	Unit 6: Mental Health	6.1 Psychology of Sport	Sports Psychology and Mental Training
+12	Health & Physical Education	Unit 7: First Aid and Emergency	7.1 Advanced First Aid	Advanced First Aid and Emergency Response
+12	Health & Physical Education	Unit 8: Health Policy	8.1 Health Systems	Ethiopian Health Policy and Systems
+12	History	Unit 1: 20th Century World	1.1 World History	Key Events of the 20th Century
+12	History	Unit 2: Cold War	2.1 Cold War	Cold War Politics and Its Impact
+12	History	Unit 3: Decolonization	3.1 Africa	African Independence and Nation Building
+12	History	Unit 4: Ethiopian Revolution	4.1 Derg Period	The 1974 Revolution and Its Aftermath
+12	History	Unit 5: Modern Ethiopia	5.1 Contemporary Ethiopia	Post-1991 Ethiopia: EPRDF to Prosperity Party
+12	History	Unit 6: Contemporary Africa	6.1 Modern Africa	Contemporary African Issues and the AU
+12	History	Unit 7: Globalization	7.1 Global World	Globalization and its Impact on Africa
+12	Information Technology	Unit 1: Advanced Programming	1.1 OOP	Object-Oriented Programming
+12	Information Technology	Unit 2: System Analysis	2.1 SDLC	Software Development Life Cycle
+12	Information Technology	Unit 3: Database Advanced	3.1 Advanced SQL	Advanced Database Design and SQL
+12	Information Technology	Unit 4: Network Administration	4.1 Networks	Network Configuration and Administration
+12	Information Technology	Unit 5: Cloud and Big Data	5.1 Cloud Computing	Cloud Computing and Big Data Analytics
+12	Information Technology	Unit 6: Capstone Project	6.1 IT Project	Designing and Implementing an IT Solution
+12	Mathematics	Unit 1: Sequences and Series	1.1 Sequences	Finite, Infinite, Arithmetic and Geometric Sequences
+12	Mathematics	Unit 1: Sequences and Series	1.2 Series	Sigma Notation, Partial Sums, Infinite Series
+12	Mathematics	Unit 1: Sequences and Series	1.3 Applications	Applications of Sequences and Series
+12	Mathematics	Unit 2: Introduction to Calculus	2.1 Derivatives	Rate of Change, Rules of Differentiation, Applications
+12	Mathematics	Unit 2: Introduction to Calculus	2.2 Integration	Antiderivatives, Definite Integrals, Fundamental Theorem
+12	Mathematics	Unit 3: Statistics	3.1 Measures of Dispersion	Range, IQR, Mean Deviation, Standard Deviation
+12	Mathematics	Unit 3: Statistics	3.2 Relative Dispersion	Coefficient of Variation and Skewness
+12	Mathematics	Unit 3: Statistics	3.3 Sampling Techniques	Simple Random, Stratified, Cluster and Systematic Sampling
+12	Mathematics	Unit 4: Introduction to Linear Programming	4.1 Inequalities & Feasible Region	Graphical Solutions of Systems of Inequalities
+12	Mathematics	Unit 4: Introduction to Linear Programming	4.2 Optimization	Maximum, Minimum Values and Applications
+12	Mathematics	Unit 5: Mathematical Applications in Business	5.1 Business Mathematics	Ratio, Proportion, Percentage, Depreciation
+12	Mathematics	Unit 5: Mathematical Applications in Business	5.2 Time Value of Money	Simple Interest, Compound Interest, Annuities
+12	Mathematics	Unit 5: Mathematical Applications in Business	5.3 Saving and Borrowing	Savings Accounts, Amortization and Financing
+12	Mathematics	Unit 5: Mathematical Applications in Business	5.4 Taxation	Tax Types and Calculation
+12	Physics	Unit 1: Applications of Physics	1.1 Physics Across Disciplines	Physics in Engineering, Medicine, Defence and Communication
+12	Physics	Unit 2: Advanced Mechanics	2.1 Projectile and Rotational Motion	Projectile, Rotational Dynamics and Planetary Motion
+12	Physics	Unit 3: Fluid Mechanics	3.1 Fluids	Fluid Statics, Pressure, Archimedes' Principle and Fluid Flow
+12	Physics	Unit 4: Electromagnetism	4.1 EM Theory	Magnetic Fields, Electromagnetic Induction and Transformers
+12	Physics	Unit 5: Electronics	5.1 Semiconductors	Semiconductors, Diodes, Transistors and Logic Circuits

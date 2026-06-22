@@ -86,6 +86,10 @@ class AppRepository(
     fun getAllUnits(): Flow<List<UnitTable>> = appDao.getAllUnits()
 
     fun getAllTopics(): Flow<List<Topic>> = appDao.getAllTopics()
+
+    fun getAllSubjects(): Flow<List<Subject>> = appDao.getAllSubjects()
+    
+    suspend fun getSubjectById(subjectId: Int): Subject? = appDao.getSubjectById(subjectId)
     
     fun getAllProgress(): Flow<List<Progress>> = appDao.getAllProgress()
 
@@ -117,7 +121,7 @@ class AppRepository(
     }
 
     suspend fun initializePrepopulatedData() {
-        if (appDao.countGrades() == 0) {
+        if (appDao.countGrades() < 4) {
             com.example.data.db.DatabaseSeeder(
                 database,
                 context

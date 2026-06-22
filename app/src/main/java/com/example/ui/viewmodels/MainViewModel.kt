@@ -56,6 +56,9 @@ class MainViewModel(private val repository: AppRepository) : ViewModel() {
     private val _allTopics = MutableStateFlow<List<Topic>>(emptyList())
     val allTopics = _allTopics.asStateFlow()
 
+    private val _allSubjects = MutableStateFlow<List<Subject>>(emptyList())
+    val allSubjects = _allSubjects.asStateFlow()
+
     init {
         viewModelScope.launch {
             repository.initializePrepopulatedData()
@@ -71,6 +74,11 @@ class MainViewModel(private val repository: AppRepository) : ViewModel() {
         viewModelScope.launch {
             repository.getAllTopics().collectLatest {
                 _allTopics.value = it
+            }
+        }
+        viewModelScope.launch {
+            repository.getAllSubjects().collectLatest {
+                _allSubjects.value = it
             }
         }
     }
@@ -186,8 +194,10 @@ class MainViewModel(private val repository: AppRepository) : ViewModel() {
                 
                 val unit = repository.getUnitById(unitId)
                 val unitTitle = unit?.title ?: "Standard Unit"
-                val gradeId = if (unitId <= 8) 9 else 10
-                val gradeName = if (gradeId == 9) "Grade 9" else "Grade 10"
+                val subjectId = unit?.subject_id ?: 0
+                val subject = repository.getSubjectById(subjectId)
+                val gradeId = subject?.grade_id ?: 9
+                val gradeName = "Grade $gradeId"
                 
                 val generated = aiTutor.generateCompleteCurriculumForTopic(topicTitle, unitTitle, gradeName)
                 if (generated != null) {

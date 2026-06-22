@@ -22,6 +22,10 @@ import com.example.ui.viewmodels.MainViewModel
 @Composable
 fun SubjectsScreen(viewModel: MainViewModel, gradeId: Int, onNavigateToUnits: (Int) -> Unit, onBack: () -> Unit) {
     val subjects by viewModel.subjects.collectAsState()
+    val grades by viewModel.grades.collectAsState()
+    val allUnits by viewModel.allUnits.collectAsState()
+    
+    val gradeName = grades.find { it.id == gradeId }?.name ?: "Grade $gradeId"
 
     LaunchedEffect(gradeId) {
         viewModel.loadSubjects(gradeId)
@@ -30,12 +34,17 @@ fun SubjectsScreen(viewModel: MainViewModel, gradeId: Int, onNavigateToUnits: (I
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Subjects") },
+                title = { Text("$gradeName Subjects", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
             )
         }
     ) { padding ->
@@ -50,24 +59,43 @@ fun SubjectsScreen(viewModel: MainViewModel, gradeId: Int, onNavigateToUnits: (I
                 modifier = Modifier.fillMaxWidth()
             ) {
                 items(subjects) { subject ->
+                    val subjectUnits = allUnits.filter { it.subject_id == subject.id }
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { onNavigateToUnits(subject.id) }
+                            .clickable { onNavigateToUnits(subject.id) },
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
                     ) {
                         Row(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(24.dp),
+                                            .fillMaxWidth()
+                                            .padding(20.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(imageVector = Icons.Default.Book, contentDescription = "Subject", modifier = Modifier.size(32.dp), tint = MaterialTheme.colorScheme.secondary)
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Text(
-                                text = subject.name,
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Medium
+                            Icon(
+                                imageVector = Icons.Default.Book, 
+                                contentDescription = "Subject", 
+                                modifier = Modifier.size(36.dp), 
+                                tint = MaterialTheme.colorScheme.secondary
                             )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = subject.name,
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "${subjectUnits.size} Curriculum Units",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
                         }
                     }
                 }

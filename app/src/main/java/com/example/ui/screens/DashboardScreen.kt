@@ -49,7 +49,7 @@ fun DashboardScreen(
 
     // Calculations
     val completedCount = allProgress.count { it.completed_lessons }
-    val totalTopicsCount = 176
+    val totalTopicsCount = allTopics.size
     val overallCompletionPercent = if (totalTopicsCount > 0) (completedCount.toFloat() / totalTopicsCount * 100).toInt() else 0
 
     val quizScores = allProgress.filter { it.quiz_score > 0 }.map { it.quiz_score }

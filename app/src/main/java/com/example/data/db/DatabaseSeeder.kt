@@ -18,65 +18,157 @@ class DatabaseSeeder(
      * Encapsulated within a single Room `withTransaction` block to guarantee atomicity during launch.
      */
     suspend fun seedDatabaseAtomically() {
-        if (appDao.countGrades() > 0) {
-            Log.d("DatabaseSeeder", "Database already seeded. Skipping seeder transaction.")
+        val gradeCount = appDao.countGrades()
+        if (gradeCount >= 4) {
+            Log.d("DatabaseSeeder", "Database already fully seeded with 4+ grades. Skipping seeder transaction.")
             return
         }
 
-        Log.d("DatabaseSeeder", "Initiating atomic database prepopulation flow...")
+        Log.d("DatabaseSeeder", "Initiating atomic database prepopulation flow (Current Grade Count: $gradeCount)...")
         
         try {
-            val jsonString = context.assets.open("curriculum.json").bufferedReader().use { it.readText() }
-            val format = Json { ignoreUnknownKeys = true }
-            val data = format.decodeFromString<CurriculumJsonDto>(jsonString)
-            
-            val dbGrades = mutableListOf<Grade>()
-            val dbSubjects = mutableListOf<Subject>()
-            val dbUnits = mutableListOf<UnitTable>()
-            val dbTopics = mutableListOf<Topic>()
-            val dbFts = mutableListOf<CurriculumSearchFts>()
-            
-            var ftsIdCounter = 1
-            for (g in data.grades) {
-                dbGrades.add(Grade(g.grade_id, g.name))
-                for (s in g.subjects) {
-                    dbSubjects.add(Subject(s.subject_id, g.grade_id, s.name))
-                    for (u in s.units) {
-                        dbUnits.add(UnitTable(u.unit_id, s.subject_id, u.number, u.name))
-                        for (sec in u.sections) {
-                            for (t in sec.topics) {
-                                dbTopics.add(Topic(t.topic_id, u.unit_id, sec.section_number, t.name))
-                                dbFts.add(
-                                    CurriculumSearchFts(
-                                        rowid = ftsIdCounter++,
-                                        topic_id = t.topic_id,
-                                        topic_title = t.name,
-                                        section = sec.section_number,
-                                        unit_title = u.name
-                                    )
-                                )
-                            }
-                        }
-                    }
+            if (gradeCount > 0) {
+                Log.d("DatabaseSeeder", "Clearing stale curriculum tables to guarantee full reseed...")
+                database.withTransaction {
+                    appDao.clearGrades()
+                    appDao.clearSubjects()
+                    appDao.clearUnits()
+                    appDao.clearTopics()
+                    appDao.clearLessons()
+                    appDao.clearExamples()
+                    appDao.clearPracticeQuestions()
+                    appDao.clearQuizQuestions()
+                    appDao.clearFts()
                 }
             }
 
-            // Execute EVERYTHING inside a single SQLite atomic database transaction block
-            database.withTransaction {
-                appDao.insertGrades(dbGrades)
-                appDao.insertSubjects(dbSubjects)
-                appDao.insertUnits(dbUnits)
-                appDao.insertTopics(dbTopics)
-                appDao.insertSearchFts(dbFts)
-                
-                // Seed associated lessons, worked examples, practice, and quiz questions dynamically
-                seedLessonsAndQuestions(dbTopics, dbUnits)
-            }
+            parseAndInsertCurriculum()
             
             Log.d("DatabaseSeeder", "Database prepopulated and atomic transaction committed successfully!")
         } catch (e: Exception) {
             Log.e("DatabaseSeeder", "Error during atomic database seeding transaction: rollback executed", e)
             throw e
+        }
+    }
+
+    /**
+     * Strategic Data Seeding: Combines legacy JSON for Math (Grades 9-10) with 
+     * expanded TSV spreadsheet for all other subjects including Grades 11-12.
+     */
+    private suspend fun parseAndInsertCurriculum() {
+        // 1. Read the pre-existing curriculum.json to harvest authentic Grade 9 & Grade 10 Math subjects
+        val jsonString = context.assets.open("curriculum.json").bufferedReader().use { it.readText() }
+        val format = Json { ignoreUnknownKeys = true }
+        val originalData = format.decodeFromString<CurriculumJsonDto>(jsonString)
+        
+        val originalGrade9Math = originalData.grades
+            .find { it.grade_id == 9 }?.subjects?.find { it.name.contains("Math", ignoreCase = true) }
+        val originalGrade10Math = originalData.grades
+            .find { it.grade_id == 10 }?.subjects?.find { it.name.contains("Math", ignoreCase = true) }
+
+        // 2. Read and parse the raw curriculum spreadsheet from curriculum_raw.txt
+        val rawLines = context.assets.open("curriculum_raw.txt").bufferedReader().use { it.readLines() }
+        
+        // Group rows: grade -> subject -> unitName -> sectionName -> topics
+        val groupedData = LinkedHashMap<Int, LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, MutableList<String>>>>>()
+        for (line in rawLines) {
+            val trimmed = line.trim()
+            if (trimmed.isEmpty() || trimmed.startsWith("Grade\t")) continue
+            val parts = trimmed.split("\t")
+            if (parts.size < 5) {
+                val spacesParts = trimmed.split("\\s{2,}".toRegex())
+                if (spacesParts.size >= 5) {
+                    processRow(spacesParts, groupedData)
+                }
+                continue
+            }
+            processRow(parts, groupedData)
+        }
+
+        val dbGrades = mutableListOf<Grade>()
+        val dbSubjects = mutableListOf<Subject>()
+        val dbUnits = mutableListOf<UnitTable>()
+        val dbTopics = mutableListOf<Topic>()
+        val dbFts = mutableListOf<CurriculumSearchFts>()
+        
+        var ftsIdCounter = 1
+
+        // Deterministic Subject Index Mappings to prevent overlapping IDs
+        val gradeSubjectsList = mapOf(
+            9 to listOf("Amharic", "Biology", "Chemistry", "Citizenship Education", "Economics", "English for Ethiopia", "Geography", "Health & Physical Education", "History", "Information Technology", "Physics"),
+            10 to listOf("Amharic", "Biology", "Chemistry", "Citizenship Education", "Economics", "English for Ethiopia", "Geography", "Health & Physical Education", "History", "Information Technology", "Physics"),
+            11 to listOf("Amharic", "Agriculture", "Biology", "Chemistry", "Citizenship Education", "Economics", "English for Ethiopia", "Geography", "Health & Physical Education", "History", "Information Technology", "Mathematics", "Physics"),
+            12 to listOf("Amharic", "Agriculture", "Biology", "Chemistry", "Citizenship Education", "Economics", "English for Ethiopia", "Geography", "Health & Physical Education", "History", "Information Technology", "Mathematics", "Physics")
+        )
+
+        for (gradeId in listOf(9, 10, 11, 12)) {
+            dbGrades.add(Grade(gradeId, "Grade $gradeId"))
+            
+            // Add Grade 9 & 10 Mathematics from original JSON
+            if (gradeId == 9 && originalGrade9Math != null) {
+                dbSubjects.add(Subject(originalGrade9Math.subject_id, 9, originalGrade9Math.name))
+                for (u in originalGrade9Math.units) {
+                    dbUnits.add(UnitTable(u.unit_id, originalGrade9Math.subject_id, u.number, u.name))
+                    for (sec in u.sections) {
+                        for (t in sec.topics) {
+                            dbTopics.add(Topic(t.topic_id, u.unit_id, sec.section_number, t.name))
+                            dbFts.add(CurriculumSearchFts(ftsIdCounter++, t.topic_id, t.name, sec.section_number, u.name))
+                        }
+                    }
+                }
+            } else if (gradeId == 10 && originalGrade10Math != null) {
+                dbSubjects.add(Subject(originalGrade10Math.subject_id, 10, originalGrade10Math.name))
+                for (u in originalGrade10Math.units) {
+                    dbUnits.add(UnitTable(u.unit_id, originalGrade10Math.subject_id, u.number, u.name))
+                    for (sec in u.sections) {
+                        for (t in sec.topics) {
+                            dbTopics.add(Topic(t.topic_id, u.unit_id, sec.section_number, t.name))
+                            dbFts.add(CurriculumSearchFts(ftsIdCounter++, t.topic_id, t.name, sec.section_number, u.name))
+                        }
+                    }
+                }
+            }
+
+            // Append other subjects parsed from TSV
+            val gradeSubjectsData = groupedData[gradeId] ?: continue
+            val subjectsList = gradeSubjectsList[gradeId] ?: emptyList()
+            
+            for (subIdx in subjectsList.indices) {
+                val subjectName = subjectsList[subIdx]
+                val unitData = gradeSubjectsData[subjectName] ?: continue
+                
+                val subjectId = gradeId * 100 + (subIdx + 10)
+                dbSubjects.add(Subject(subjectId, gradeId, subjectName))
+                
+                var topicIdCounter = 1
+                for ((unitTitle, sectionData) in unitData) {
+                    val unitNum = parseUnitNumber(unitTitle)
+                    val unitId = subjectId * 100 + unitNum
+                    val unitNameOnly = parseUnitName(unitTitle)
+                    
+                    dbUnits.add(UnitTable(unitId, subjectId, unitNum, unitNameOnly))
+                    
+                    for ((sectionNum, topicsList) in sectionData) {
+                        for (topicName in topicsList) {
+                            val topicId = unitId * 100 + topicIdCounter++
+                            dbTopics.add(Topic(topicId, unitId, sectionNum, topicName))
+                            dbFts.add(CurriculumSearchFts(ftsIdCounter++, topicId, topicName, sectionNum, unitNameOnly))
+                        }
+                    }
+                }
+            }
+        }
+
+        // Execute bulk insert inside a transaction
+        database.withTransaction {
+            appDao.insertGrades(dbGrades)
+            appDao.insertSubjects(dbSubjects)
+            appDao.insertUnits(dbUnits)
+            appDao.insertTopics(dbTopics)
+            appDao.insertSearchFts(dbFts)
+            
+            // Seed associated lessons, worked examples, practice, and quiz questions dynamically
+            seedLessonsAndQuestions(dbTopics, dbUnits)
         }
     }
 
@@ -395,5 +487,47 @@ class DatabaseSeeder(
                 correct_option_index = 0
             )
         )
+    }
+
+    private fun processRow(
+        parts: List<String>,
+        groupedData: LinkedHashMap<Int, LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, MutableList<String>>>>>
+    ) {
+        val gradeStr = parts[0].trim()
+        val gradeId = gradeStr.toIntOrNull() ?: return
+        val subject = parts[1].trim()
+
+        // Skip Grade 9 and Grade 10 Mathematics as we already added it
+        if ((gradeId == 9 || gradeId == 10) && subject.contains("Math", ignoreCase = true)) {
+            return
+        }
+
+        val unit = parts[2].trim()
+        val section = parts[3].trim()
+        val topic = parts[4].trim()
+
+        val gradeMap = groupedData.getOrPut(gradeId) { LinkedHashMap() }
+        val subjectMap = gradeMap.getOrPut(subject) { LinkedHashMap() }
+        val unitMap = subjectMap.getOrPut(unit) { LinkedHashMap() }
+        val topicsList = unitMap.getOrPut(section) { mutableListOf() }
+        
+        if (!topicsList.contains(topic)) {
+            topicsList.add(topic)
+        }
+    }
+
+    private fun parseUnitNumber(unitStr: String): Int {
+        val regex = "Unit\\s+(\\d+)".toRegex()
+        val match = regex.find(unitStr)
+        return match?.groupValues?.get(1)?.toIntOrNull() ?: 1
+    }
+
+    private fun parseUnitName(unitStr: String): String {
+        val index = unitStr.indexOf(':')
+        return if (index != -1) {
+            unitStr.substring(index + 1).trim()
+        } else {
+            unitStr.trim()
+        }
     }
 }
