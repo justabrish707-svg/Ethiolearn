@@ -43,10 +43,6 @@ fun HomeScreen(
     var searchQuery by remember { mutableStateOf("") }
     var showAuditDialog by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        viewModel.loadAllProgress()
-    }
-
     val completedLessons = allProgress.count { it.completed_lessons }
     val avgScore = if (allProgress.isNotEmpty()) {
         val nonZeroScores = allProgress.map { it.quiz_score }.filter { it > 0 }

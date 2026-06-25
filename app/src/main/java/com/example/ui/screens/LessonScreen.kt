@@ -30,7 +30,8 @@ fun LessonScreen(
     viewModel: MainViewModel, 
     topicId: Int, 
     onBack: () -> Unit,
-    onNavigateToQuiz: (Int) -> Unit
+    onNavigateToQuiz: (Int) -> Unit,
+    onNavigateToPractice: (Int) -> Unit
 ) {
     val currentLesson by viewModel.currentLesson.collectAsState()
     val objectives by viewModel.objectives.collectAsState()
@@ -74,7 +75,7 @@ fun LessonScreen(
             when (selectedTabIndex) {
                 0 -> LearnTab(currentLesson?.content ?: "", currentLesson?.video_url, objectives.map { it.objective_text })
                 1 -> ExamplesTab(examples)
-                2 -> QuizTab(topicProgress?.quiz_score ?: 0, onNavigateToQuiz = { onNavigateToQuiz(topicId) })
+                2 -> QuizTab(topicProgress?.quiz_score ?: 0, onNavigateToQuiz = { onNavigateToQuiz(topicId) }, onNavigateToPractice = { onNavigateToPractice(topicId) })
             }
         }
     }
@@ -162,7 +163,7 @@ fun ExamplesTab(examples: List<com.example.data.model.Example>) {
 }
 
 @Composable
-fun QuizTab(highScore: Int, onNavigateToQuiz: () -> Unit) {
+fun QuizTab(highScore: Int, onNavigateToQuiz: () -> Unit, onNavigateToPractice: () -> Unit) {
     Box(Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -177,7 +178,7 @@ fun QuizTab(highScore: Int, onNavigateToQuiz: () -> Unit) {
                 Text("Ready to Test?", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "Take a 10-question quiz to test your mastery of this topic.",
+                    "Take a 10-question quiz or practice at your own pace.",
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -193,6 +194,13 @@ fun QuizTab(highScore: Int, onNavigateToQuiz: () -> Unit) {
                     modifier = Modifier.fillMaxWidth().height(56.dp)
                 ) {
                     Text("Start Quiz")
+                }
+                Spacer(Modifier.height(16.dp))
+                OutlinedButton(
+                    onClick = onNavigateToPractice,
+                    modifier = Modifier.fillMaxWidth().height(56.dp)
+                ) {
+                    Text("Practice Mode")
                 }
             }
         }

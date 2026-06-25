@@ -17,6 +17,8 @@ import com.example.data.model.QuizQuestion
 import com.example.ui.viewmodels.MainViewModel
 import kotlinx.coroutines.delay
 
+import org.json.JSONArray
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExamScreen(
@@ -32,6 +34,7 @@ fun ExamScreen(
     var userAnswers by remember { mutableStateOf(mutableMapOf<Int, Int>()) }
     var timeLeftSeconds by remember { mutableIntStateOf(60 * 60) } // 60 mins default
     var isExamFinished by remember { mutableStateOf(false) }
+    var examEndTimestamp by remember { mutableLongStateOf(0L) }
 
     LaunchedEffect(examId) {
         viewModel.loadExamQuestions(examId)
@@ -40,7 +43,9 @@ fun ExamScreen(
     LaunchedEffect(session) {
         session?.let { s ->
             if (!s.is_finished) {
-                timeLeftSeconds = s.time_left_seconds
+                examEndTimestamp = s.exam_end_timestamp
+                val remaining = ((examEndTimestamp - System.currentTimeMillis()) / 1000).toInt()
+                timeLeftSeconds = maxOf(0, remaining)
                 currentQuestionIndex = s.current_question_index
                 // simple delimited string parsing e.g. "0:1,1:3"
                 val map = mutableMapOf<Int, Int>()
@@ -57,6 +62,10 @@ fun ExamScreen(
             } else {
                 isExamFinished = true
             }
+        } ?: run {
+            // New session
+            examEndTimestamp = System.currentTimeMillis() + (60 * 60 * 1000)
+            timeLeftSeconds = 60 * 60
         }
     }
 
@@ -64,14 +73,16 @@ fun ExamScreen(
     LaunchedEffect(timeLeftSeconds, isExamFinished) {
         if (timeLeftSeconds > 0 && !isExamFinished) {
             delay(1000)
-            timeLeftSeconds--
+            val remaining = ((examEndTimestamp - System.currentTimeMillis()) / 1000).toInt()
+            timeLeftSeconds = maxOf(0, remaining)
+            
             if (timeLeftSeconds % 5 == 0 && questions.isNotEmpty()) {
                 val answersString = userAnswers.map { "${it.key}:${it.value}" }.joinToString(",")
                 viewModel.saveExamSession(
                     com.example.data.model.ExamSession(
                         exam_id = examId,
                         answers_json = answersString,
-                        time_left_seconds = timeLeftSeconds,
+                        exam_end_timestamp = examEndTimestamp,
                         current_question_index = currentQuestionIndex,
                         is_finished = false
                     )
@@ -83,13 +94,20 @@ fun ExamScreen(
         
         if (isExamFinished && questions.isNotEmpty()) {
             val answersString = userAnswers.map { "${it.key}:${it.value}" }.joinToString(",")
+            var correctCount = 0
+            questions.forEachIndexed { index, question ->
+                if (userAnswers[index] == question.correct_option) {
+                    correctCount++
+                }
+            }
             viewModel.saveExamSession(
                 com.example.data.model.ExamSession(
                     exam_id = examId,
                     answers_json = answersString,
-                    time_left_seconds = timeLeftSeconds,
+                    exam_end_timestamp = examEndTimestamp,
                     current_question_index = currentQuestionIndex,
-                    is_finished = true
+                    is_finished = true,
+                    score = correctCount
                 )
             )
         }
@@ -103,6 +121,18 @@ fun ExamScreen(
         }
     } else {
         val currentQuestion = questions[currentQuestionIndex]
+        val optionsList = remember(currentQuestion) {
+            val list = mutableListOf<String>()
+            try {
+                val arr = JSONArray(currentQuestion.options_json)
+                for (i in 0 until arr.length()) {
+                    list.add(arr.getString(i))
+                }
+            } catch (e: Exception) {
+                list.addAll(currentQuestion.options_json.split("||"))
+            }
+            list
+        }
         
         Scaffold(
             topBar = {
@@ -176,7 +206,7 @@ fun ExamScreen(
                 
                 Spacer(Modifier.height(24.dp))
 
-                currentQuestion.options.forEachIndexed { index, option ->
+                optionsList.forEachIndexed { index, option ->
                     val isSelected = selectedOption == index || userAnswers[currentQuestionIndex] == index
                     
                     Surface(
@@ -208,31 +238,57 @@ fun ExamResultScreen(
     onBack: () -> Unit
 ) {
     var correctCount = 0
+    val weakTopics = mutableSetOf<Int>()
+    val weakObjectives = mutableSetOf<Int>()
+
     questions.forEachIndexed { index, question ->
-        if (userAnswers[index] == question.correct_option_index) {
+        if (userAnswers[index] == question.correct_option) {
             correctCount++
+        } else {
+            weakTopics.add(question.topic_id)
+            if (question.learning_objective_id != null) {
+                weakObjectives.add(question.learning_objective_id)
+            }
         }
     }
     val scorePercentage = if (questions.isNotEmpty()) (correctCount.toFloat() / questions.size * 100).toInt() else 0
 
-    Column(
+    androidx.compose.foundation.lazy.LazyColumn(
         Modifier.fillMaxSize().padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Icon(Icons.Default.Stars, contentDescription = null, modifier = Modifier.size(120.dp), tint = MaterialTheme.colorScheme.primary)
-        Spacer(Modifier.height(24.dp))
-        Text("Exam Finished!", style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Bold)
-        Spacer(Modifier.height(8.dp))
-        Text("Your Final Score", style = MaterialTheme.typography.titleMedium)
-        Text("$scorePercentage%", style = MaterialTheme.typography.displayLarge, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.primary)
-        
-        Spacer(Modifier.height(16.dp))
-        Text("$correctCount out of ${questions.size} correct", style = MaterialTheme.typography.bodyLarge)
-        
-        Spacer(Modifier.height(48.dp))
-        Button(onClick = onBack, modifier = Modifier.fillMaxWidth().height(56.dp)) {
-            Text("Back to Exams")
+        item {
+            Icon(Icons.Default.Stars, contentDescription = null, modifier = Modifier.size(120.dp), tint = MaterialTheme.colorScheme.primary)
+            Spacer(Modifier.height(24.dp))
+            Text("Exam Finished!", style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Bold)
+            Spacer(Modifier.height(8.dp))
+            Text("Your Final Score", style = MaterialTheme.typography.titleMedium)
+            Text("$scorePercentage%", style = MaterialTheme.typography.displayLarge, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.primary)
+            
+            Spacer(Modifier.height(16.dp))
+            Text("$correctCount out of ${questions.size} correct", style = MaterialTheme.typography.bodyLarge)
+            
+            Spacer(Modifier.height(32.dp))
+            
+            if (weakTopics.isNotEmpty()) {
+                Text("Areas for Improvement", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                Spacer(Modifier.height(8.dp))
+                Text("• ${weakTopics.size} Weak Topics Detected", style = MaterialTheme.typography.bodyMedium)
+                Text("• ${weakObjectives.size} Learning Objectives to Review", style = MaterialTheme.typography.bodyMedium)
+                Spacer(Modifier.height(24.dp))
+            }
+            
+            Button(onClick = onBack, modifier = Modifier.fillMaxWidth().height(56.dp)) {
+                Text("Back to Exams")
+            }
+            
+            if (weakTopics.isNotEmpty()) {
+                Spacer(Modifier.height(16.dp))
+                OutlinedButton(onClick = onBack, modifier = Modifier.fillMaxWidth().height(56.dp)) {
+                    Text("Review Weak Areas")
+                }
+            }
         }
     }
 }

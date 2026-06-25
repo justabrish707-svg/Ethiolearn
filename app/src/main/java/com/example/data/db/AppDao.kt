@@ -181,4 +181,9 @@ interface AppDao {
 
     @Query("DELETE FROM curriculum_search_fts")
     suspend fun clearFts()
+    @Query("SELECT * FROM student_profiles WHERE id = 1 LIMIT 1")
+    fun getStudentProfile(): Flow<StudentProfile?>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveStudentProfile(profile: StudentProfile)
 }

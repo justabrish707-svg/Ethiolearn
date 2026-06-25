@@ -9,9 +9,8 @@ import kotlinx.coroutines.launch
 
 class MainViewModel(private val repository: AppRepository) : ViewModel() {
 
-    private val _grades = MutableStateFlow<List<Grade>>(emptyList())
-    val grades = _grades.asStateFlow()
-
+    val grades = repository.grades.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    
     private val _subjects = MutableStateFlow<List<Subject>>(emptyList())
     val subjects = _subjects.asStateFlow()
 
@@ -36,17 +35,13 @@ class MainViewModel(private val repository: AppRepository) : ViewModel() {
     private val _topicProgress = MutableStateFlow<Progress?>(null)
     val topicProgress = _topicProgress.asStateFlow()
 
-    private val _allProgress = MutableStateFlow<List<Progress>>(emptyList())
-    val allProgress = _allProgress.asStateFlow()
+    val allProgress = repository.getAllProgress().stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    private val _allUnits = MutableStateFlow<List<UnitTable>>(emptyList())
-    val allUnits = _allUnits.asStateFlow()
+    val allUnits = repository.getAllUnits().stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    private val _allTopics = MutableStateFlow<List<Topic>>(emptyList())
-    val allTopics = _allTopics.asStateFlow()
+    val allTopics = repository.getAllTopics().stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    private val _allSubjects = MutableStateFlow<List<Subject>>(emptyList())
-    val allSubjects = _allSubjects.asStateFlow()
+    val allSubjects = repository.getAllSubjects().stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     private val _weakTopics = MutableStateFlow<List<Topic>>(emptyList())
     val weakTopics = _weakTopics.asStateFlow()
@@ -54,8 +49,7 @@ class MainViewModel(private val repository: AppRepository) : ViewModel() {
     private val _achievements = MutableStateFlow<List<Achievement>>(emptyList())
     val achievements = _achievements.asStateFlow()
 
-    private val _exams = MutableStateFlow<List<Exam>>(emptyList())
-    val exams = _exams.asStateFlow()
+    val exams = repository.getAllExams().stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     private val _currentExamQuestions = MutableStateFlow<List<QuizQuestion>>(emptyList())
     val currentExamQuestions = _currentExamQuestions.asStateFlow()
@@ -66,25 +60,20 @@ class MainViewModel(private val repository: AppRepository) : ViewModel() {
     private val _searchResults = MutableStateFlow<List<Topic>>(emptyList())
     val searchResults = _searchResults.asStateFlow()
 
+    private val _studentProfile = MutableStateFlow<StudentProfile?>(null)
+    val studentProfile = _studentProfile.asStateFlow()
+
     init {
         viewModelScope.launch {
-            repository.initializePrepopulatedData()
-            repository.grades.collectLatest { _grades.value = it }
-        }
-        viewModelScope.launch {
-            repository.getAllUnits().collectLatest { _allUnits.value = it }
-        }
-        viewModelScope.launch {
-            repository.getAllTopics().collectLatest { _allTopics.value = it }
-        }
-        viewModelScope.launch {
-            repository.getAllSubjects().collectLatest { _allSubjects.value = it }
-        }
-        viewModelScope.launch {
-            repository.getAllProgress().collectLatest { _allProgress.value = it }
-        }
-        viewModelScope.launch {
-            repository.getAllExams().collectLatest { _exams.value = it }
+            repository.getStudentProfile().collectLatest { 
+                if (it == null) {
+                    val newProfile = StudentProfile()
+                    repository.saveStudentProfile(newProfile)
+                    _studentProfile.value = newProfile
+                } else {
+                    _studentProfile.value = it 
+                }
+            }
         }
     }
 
@@ -133,12 +122,6 @@ class MainViewModel(private val repository: AppRepository) : ViewModel() {
     fun loadProgress(topicId: Int) {
         viewModelScope.launch {
             repository.getProgressByTopic(topicId).collectLatest { _topicProgress.value = it }
-        }
-    }
-
-    fun loadAllProgress() {
-        viewModelScope.launch {
-            repository.getAllProgress().collectLatest { _allProgress.value = it }
         }
     }
 
@@ -199,7 +182,6 @@ class MainViewModel(private val repository: AppRepository) : ViewModel() {
     fun submitQuizScore(topicId: Int, score: Int) {
         viewModelScope.launch {
             repository.saveQuizScore(topicId, score)
-            loadAllProgress() // Refresh
             loadWeakTopics()
             loadAchievements()
         }

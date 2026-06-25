@@ -96,19 +96,21 @@ enum class Difficulty { BEGINNER, INTERMEDIATE, ADVANCED }
 @Entity(
     tableName = "quiz_questions",
     foreignKeys = [
-        ForeignKey(entity = Topic::class, parentColumns = ["id"], childColumns = ["topic_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(entity = Topic::class, parentColumns = ["id"], childColumns = ["topic_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(entity = LearningObjective::class, parentColumns = ["id"], childColumns = ["learning_objective_id"], onDelete = ForeignKey.SET_NULL)
     ],
-    indices = [Index("topic_id")]
+    indices = [Index("topic_id"), Index("learning_objective_id")]
 )
 data class QuizQuestion(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val topic_id: Int,
+    val learning_objective_id: Int? = null,
     val question_text: String,
-    val options: List<String>,
-    val correct_option_index: Int,
+    val options_json: String, // Stored as JSON array
+    val correct_option: Int, // index
     val explanation: String,
     val difficulty: Difficulty = Difficulty.INTERMEDIATE,
-    val learning_objective_id: Int? = null
+    val question_type: String = "MULTIPLE_CHOICE"
 )
 
 @Entity(
@@ -161,9 +163,21 @@ data class Exam(
 data class ExamSession(
     @PrimaryKey val exam_id: Int,
     val answers_json: String, // Map<Int, Int> stored as JSON or simple delimited string
-    val time_left_seconds: Int,
+    val exam_end_timestamp: Long, // timestamp
     val current_question_index: Int,
-    val is_finished: Boolean
+    val is_finished: Boolean,
+    val score: Int = 0
+)
+
+@Entity(tableName = "student_profiles")
+data class StudentProfile(
+    @PrimaryKey val id: Int = 1,
+    val current_streak: Int = 0,
+    val longest_streak: Int = 0,
+    val total_study_minutes: Int = 0,
+    val daily_goal_minutes: Int = 30,
+    val weekly_goal_minutes: Int = 210,
+    val last_study_date: Long = 0L
 )
 
 @Fts4

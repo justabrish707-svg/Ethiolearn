@@ -35,8 +35,9 @@ fun SearchScreen(
     val allSubjects by viewModel.allSubjects.collectAsStateWithLifecycle()
     val grades by viewModel.grades.collectAsStateWithLifecycle()
 
-    // Trigger search in real-time on query updates
+    // Trigger search in real-time on query updates with debounce
     LaunchedEffect(searchQuery) {
+        kotlinx.coroutines.delay(300) // 300ms debounce
         viewModel.search(searchQuery)
     }
 

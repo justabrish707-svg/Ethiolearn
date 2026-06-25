@@ -36,8 +36,9 @@ fun DashboardScreen(
     val achievements by viewModel.achievements.collectAsStateWithLifecycle()
     val allTopics by viewModel.allTopics.collectAsStateWithLifecycle()
 
+    val studentProfile by viewModel.studentProfile.collectAsStateWithLifecycle()
+
     LaunchedEffect(Unit) {
-        viewModel.loadAllProgress()
         viewModel.loadWeakTopics()
         viewModel.loadAchievements()
     }
@@ -64,7 +65,12 @@ fun DashboardScreen(
             }
 
             item {
-                RetentionSection(streak = 5, goalProgress = 0.6f) // Hardcoded for demo, but logic exists in VM
+                val profile = studentProfile
+                val streak = profile?.current_streak ?: 0
+                val goalProgress = if (profile != null && profile.weekly_goal_minutes > 0) {
+                    profile.total_study_minutes.toFloat() / profile.weekly_goal_minutes.toFloat()
+                } else 0f
+                RetentionSection(streak = streak, goalProgress = minOf(1f, goalProgress))
             }
 
             if (weakTopics.isNotEmpty()) {

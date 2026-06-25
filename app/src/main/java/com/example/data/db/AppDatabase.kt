@@ -19,9 +19,10 @@ import com.example.data.model.*
         StudySession::class,
         Achievement::class,
         Exam::class,
-        ExamSession::class
+        ExamSession::class,
+        StudentProfile::class
     ],
-    version = 6,
+    version = 7,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -39,6 +40,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "ethiolearn_database"
                 )
+                .createFromAsset("database/curriculum.db")
                 .fallbackToDestructiveMigration()
                 .build()
                 INSTANCE = instance

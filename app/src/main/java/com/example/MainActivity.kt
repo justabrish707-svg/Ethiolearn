@@ -124,6 +124,9 @@ class MainActivity : ComponentActivity() {
                                 onBack = { navController.popBackStack() },
                                 onNavigateToQuiz = { tid ->
                                     navController.navigate("quiz/$tid")
+                                },
+                                onNavigateToPractice = { tid ->
+                                    navController.navigate("practice/$tid")
                                 }
                             )
                         }
@@ -133,6 +136,13 @@ class MainActivity : ComponentActivity() {
                         ) { backStackEntry ->
                             val topicId = backStackEntry.arguments?.getInt("topicId") ?: 0
                             QuizScreen(viewModel = viewModel, topicId = topicId, onBack = { navController.popBackStack() })
+                        }
+                        composable(
+                            "practice/{topicId}",
+                            arguments = listOf(navArgument("topicId") { type = NavType.IntType })
+                        ) { backStackEntry ->
+                            val topicId = backStackEntry.arguments?.getInt("topicId") ?: 0
+                            PracticeModeScreen(viewModel = viewModel, topicId = topicId, onBack = { navController.popBackStack() })
                         }
                     }
                 }

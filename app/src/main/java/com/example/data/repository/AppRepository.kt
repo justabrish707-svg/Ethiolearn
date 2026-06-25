@@ -108,6 +108,10 @@ class AppRepository(
         appDao.insertProgress(progress)
     }
 
+    fun getStudentProfile(): Flow<StudentProfile?> = appDao.getStudentProfile()
+
+    suspend fun saveStudentProfile(profile: StudentProfile) = appDao.saveStudentProfile(profile)
+
     suspend fun markTopicLessonCompleted(topicId: Int) {
         val currentProgress = appDao.getProgressByTopicDirect(topicId)
         val newProgress = currentProgress?.copy(
@@ -143,14 +147,5 @@ class AppRepository(
 
     suspend fun insertQuizQuestions(questions: List<QuizQuestion>) {
         appDao.insertQuizQuestions(questions)
-    }
-
-    suspend fun initializePrepopulatedData() {
-        if (appDao.countTopics() < 1000) {
-            com.example.data.db.DatabaseSeeder(
-                database,
-                context
-            ).seedDatabaseAtomically()
-        }
     }
 }
