@@ -41,12 +41,13 @@ class ProgressRepository(private val appDao: AppDao) {
         if (current != null) {
             appDao.insertProgress(current.copy(
                 completed_lessons = completed,
-                timestamp = System.currentTimeMillis()
+                last_study_date = System.currentTimeMillis()
             ))
         } else {
             appDao.insertProgress(Progress(
                 topic_id = topicId,
-                completed_lessons = completed
+                completed_lessons = completed,
+                last_study_date = System.currentTimeMillis()
             ))
         }
     }
@@ -60,12 +61,13 @@ class ProgressRepository(private val appDao: AppDao) {
             val maxScore = maxOf(current.quiz_score, score)
             appDao.insertProgress(current.copy(
                 quiz_score = maxScore,
-                timestamp = System.currentTimeMillis()
+                last_study_date = System.currentTimeMillis()
             ))
         } else {
             appDao.insertProgress(Progress(
                 topic_id = topicId,
-                quiz_score = score
+                quiz_score = score,
+                last_study_date = System.currentTimeMillis()
             ))
         }
     }
@@ -80,7 +82,7 @@ class ProgressRepository(private val appDao: AppDao) {
                     topicId = p.topic_id,
                     isCompleted = p.completed_lessons,
                     highestQuizScore = p.quiz_score,
-                    lastAttemptTimestamp = p.timestamp
+                    lastAttemptTimestamp = p.last_study_date
                 )
             }
         }

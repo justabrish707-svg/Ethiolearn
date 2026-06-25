@@ -52,6 +52,9 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onNavigateToSearch = {
                                     navController.navigate("search")
+                                },
+                                onNavigateToExams = {
+                                    navController.navigate("exams")
                                 }
                             )
                         }
@@ -66,6 +69,22 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onBack = { navController.popBackStack() }
                             )
+                        }
+                        composable("exams") {
+                            ExamListScreen(
+                                viewModel = viewModel,
+                                onNavigateToExam = { examId ->
+                                    navController.navigate("exam/$examId")
+                                },
+                                onBack = { navController.popBackStack() }
+                            )
+                        }
+                        composable(
+                            "exam/{examId}",
+                            arguments = listOf(navArgument("examId") { type = NavType.IntType })
+                        ) { backStackEntry ->
+                            val examId = backStackEntry.arguments?.getInt("examId") ?: 0
+                            ExamScreen(viewModel, examId, onBack = { navController.popBackStack() })
                         }
                         composable(
                             "subjects/{gradeId}",

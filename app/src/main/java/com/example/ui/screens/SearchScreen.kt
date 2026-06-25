@@ -191,10 +191,10 @@ fun SearchScreen(
                                         fontWeight = FontWeight.SemiBold,
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
-                                    if (topic.section.isNotEmpty()) {
+                                    if (topic.section_number.isNotEmpty()) {
                                         Spacer(modifier = Modifier.height(2.dp))
                                         Text(
-                                            text = "Section: ${topic.section}",
+                                            text = "Section: ${topic.section_number}",
                                             style = MaterialTheme.typography.bodySmall,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )

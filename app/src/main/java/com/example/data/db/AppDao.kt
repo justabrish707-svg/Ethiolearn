@@ -1,19 +1,7 @@
 package com.example.data.db
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import androidx.room.Update
-import com.example.data.model.Example
-import com.example.data.model.Grade
-import com.example.data.model.Lesson
-import com.example.data.model.PracticeQuestion
-import com.example.data.model.Progress
-import com.example.data.model.QuizQuestion
-import com.example.data.model.Subject
-import com.example.data.model.Topic
-import com.example.data.model.UnitTable
+import androidx.room.*
+import com.example.data.model.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -30,9 +18,6 @@ interface AppDao {
     @Query("SELECT * FROM topics WHERE unit_id = :unitId")
     fun getTopicsByUnit(unitId: Int): Flow<List<Topic>>
 
-    @Query("SELECT topics.* FROM topics INNER JOIN units ON topics.unit_id = units.id WHERE topics.title LIKE '%' || :query || '%' OR topics.section LIKE '%' || :query || '%' OR units.title LIKE '%' || :query || '%'")
-    fun searchTopics(query: String): Flow<List<Topic>>
-
     @Query("SELECT * FROM topics WHERE id = :topicId LIMIT 1")
     suspend fun getTopicById(topicId: Int): Topic?
 
@@ -42,11 +27,11 @@ interface AppDao {
     @Query("SELECT * FROM lessons WHERE topic_id = :topicId LIMIT 1")
     fun getLessonByTopic(topicId: Int): Flow<Lesson?>
 
+    @Query("SELECT * FROM learning_objectives WHERE topic_id = :topicId")
+    fun getObjectivesByTopic(topicId: Int): Flow<List<LearningObjective>>
+
     @Query("SELECT * FROM examples WHERE topic_id = :topicId")
     fun getExamplesByTopic(topicId: Int): Flow<List<Example>>
-
-    @Query("SELECT * FROM practice_questions WHERE topic_id = :topicId")
-    fun getPracticeQuestionsByTopic(topicId: Int): Flow<List<PracticeQuestion>>
 
     @Query("SELECT * FROM quiz_questions WHERE topic_id = :topicId")
     fun getQuizQuestionsByTopic(topicId: Int): Flow<List<QuizQuestion>>
@@ -57,8 +42,31 @@ interface AppDao {
     @Query("SELECT * FROM progress")
     fun getAllProgress(): Flow<List<Progress>>
 
+    // Weak Topic Detection
+    @Query("SELECT * FROM topics WHERE id IN (SELECT topic_id FROM progress WHERE mastery_score < 60) LIMIT 10")
+    fun getWeakTopics(): Flow<List<Topic>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertProgress(progress: Progress)
+
+    // Retention & Exams
+    @Query("SELECT * FROM study_sessions ORDER BY date DESC")
+    fun getStudySessions(): Flow<List<StudySession>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertStudySession(session: StudySession)
+
+    @Query("SELECT * FROM achievements")
+    fun getAchievements(): Flow<List<Achievement>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAchievement(achievement: Achievement)
+
+    @Query("SELECT * FROM exams WHERE type = :type")
+    fun getExamsByType(type: String): Flow<List<Exam>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertExam(exam: Exam)
 
     // Prepopulation helpers
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -80,22 +88,53 @@ interface AppDao {
     suspend fun insertExamples(examples: List<Example>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPracticeQuestions(questions: List<PracticeQuestion>)
+    suspend fun insertQuizQuestions(questions: List<QuizQuestion>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertQuizQuestions(questions: List<QuizQuestion>)
+    suspend fun insertObjectives(objectives: List<LearningObjective>)
     
-    @Query("SELECT COUNT(*) FROM grades")
-    suspend fun countGrades(): Int
-
     @Query("SELECT COUNT(*) FROM topics")
     suspend fun countTopics(): Int
+
+    @Query("SELECT * FROM quiz_questions WHERE id IN (:questionIds)")
+    suspend fun getQuestionsByIds(questionIds: List<Int>): List<QuizQuestion>
+
+    @Query("""
+        SELECT q.* FROM quiz_questions q
+        INNER JOIN topics t ON q.topic_id = t.id
+        INNER JOIN units u ON t.unit_id = u.id
+        WHERE u.subject_id = :subjectId
+        ORDER BY RANDOM() LIMIT :limit
+    """)
+    suspend fun getRandomQuestionsBySubject(subjectId: Int, limit: Int): List<QuizQuestion>
+
+    @Query("""
+        SELECT q.* FROM quiz_questions q
+        INNER JOIN topics t ON q.topic_id = t.id
+        INNER JOIN units u ON t.unit_id = u.id
+        INNER JOIN subjects s ON u.subject_id = s.id
+        WHERE s.grade_id = :gradeId
+        ORDER BY RANDOM() LIMIT :limit
+    """)
+    suspend fun getRandomQuestionsByGrade(gradeId: Int, limit: Int): List<QuizQuestion>
+
+    @Query("SELECT * FROM exams WHERE id = :examId LIMIT 1")
+    suspend fun getExamById(examId: Int): Exam?
+
+    @Query("SELECT * FROM exams")
+    fun getAllExams(): Flow<List<Exam>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveExamSession(session: ExamSession)
+
+    @Query("SELECT * FROM exam_sessions WHERE exam_id = :examId LIMIT 1")
+    suspend fun getExamSession(examId: Int): ExamSession?
 
     @Query("SELECT * FROM progress WHERE topic_id = :topicId LIMIT 1")
     suspend fun getProgressByTopicDirect(topicId: Int): Progress?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSearchFts(ftsItems: List<com.example.data.model.CurriculumSearchFts>)
+    suspend fun insertSearchFts(ftsItems: List<CurriculumSearchFts>)
 
     @Query("""
         SELECT t.* FROM topics t
@@ -112,7 +151,7 @@ interface AppDao {
 
     @Query("SELECT * FROM subjects ORDER BY id ASC")
     fun getAllSubjects(): Flow<List<Subject>>
-
+    
     @Query("SELECT * FROM subjects WHERE id = :subjectId LIMIT 1")
     suspend fun getSubjectById(subjectId: Int): Subject?
 
@@ -134,11 +173,11 @@ interface AppDao {
     @Query("DELETE FROM examples")
     suspend fun clearExamples()
 
-    @Query("DELETE FROM practice_questions")
-    suspend fun clearPracticeQuestions()
-
     @Query("DELETE FROM quiz_questions")
     suspend fun clearQuizQuestions()
+
+    @Query("DELETE FROM learning_objectives")
+    suspend fun clearObjectives()
 
     @Query("DELETE FROM curriculum_search_fts")
     suspend fun clearFts()

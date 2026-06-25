@@ -33,7 +33,8 @@ fun HomeScreen(
     onNavigateToGrade: (Int) -> Unit,
     onNavigateToLesson: (Int) -> Unit,
     onNavigateToDashboard: () -> Unit,
-    onNavigateToSearch: () -> Unit
+    onNavigateToSearch: () -> Unit,
+    onNavigateToExams: () -> Unit
 ) {
     val grades by viewModel.grades.collectAsState()
     val allSubjects by viewModel.allSubjects.collectAsState()
@@ -109,7 +110,29 @@ fun HomeScreen(
                 }
             }
 
-            // Search Bar (Reroutes or uses local search)
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                OutlinedButton(
+                    onClick = onNavigateToDashboard,
+                    modifier = Modifier.weight(1f).testTag("home_stats_button"),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Icon(Icons.Default.BarChart, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Dashboard")
+                }
+                Button(
+                    onClick = onNavigateToExams,
+                    modifier = Modifier.weight(1f).testTag("home_exams_button"),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Icon(Icons.Default.School, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Exams")
+                }
+            }
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = {
@@ -237,7 +260,7 @@ fun HomeScreen(
                                 ) {
                                     Column(modifier = Modifier.weight(1f)) {
                                         Text(
-                                            text = "Section ${topic.section}",
+                                            text = "Section ${topic.section_number}",
                                             style = MaterialTheme.typography.labelSmall,
                                             color = MaterialTheme.colorScheme.primary,
                                             fontWeight = FontWeight.Bold

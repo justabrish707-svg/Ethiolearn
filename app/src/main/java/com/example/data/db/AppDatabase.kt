@@ -1,19 +1,8 @@
 package com.example.data.db
 
 import android.content.Context
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
-import com.example.data.model.CurriculumSearchFts
-import com.example.data.model.Example
-import com.example.data.model.Grade
-import com.example.data.model.Lesson
-import com.example.data.model.PracticeQuestion
-import com.example.data.model.Progress
-import com.example.data.model.QuizQuestion
-import com.example.data.model.Subject
-import com.example.data.model.Topic
-import com.example.data.model.UnitTable
+import androidx.room.*
+import com.example.data.model.*
 
 @Database(
     entities = [
@@ -23,14 +12,19 @@ import com.example.data.model.UnitTable
         Topic::class,
         Lesson::class,
         Example::class,
-        PracticeQuestion::class,
         QuizQuestion::class,
         Progress::class,
-        CurriculumSearchFts::class
+        CurriculumSearchFts::class,
+        LearningObjective::class,
+        StudySession::class,
+        Achievement::class,
+        Exam::class,
+        ExamSession::class
     ],
-    version = 4,
+    version = 6,
     exportSchema = false
 )
+@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun appDao(): AppDao
 
