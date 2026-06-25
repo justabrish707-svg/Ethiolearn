@@ -88,6 +88,9 @@ interface AppDao {
     @Query("SELECT COUNT(*) FROM grades")
     suspend fun countGrades(): Int
 
+    @Query("SELECT COUNT(*) FROM topics")
+    suspend fun countTopics(): Int
+
     @Query("SELECT * FROM progress WHERE topic_id = :topicId LIMIT 1")
     suspend fun getProgressByTopicDirect(topicId: Int): Progress?
 

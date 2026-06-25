@@ -32,6 +32,8 @@ fun SearchScreen(
     var searchQuery by remember { mutableStateOf("") }
     val searchResults by viewModel.searchResults.collectAsStateWithLifecycle()
     val allUnits by viewModel.allUnits.collectAsStateWithLifecycle()
+    val allSubjects by viewModel.allSubjects.collectAsStateWithLifecycle()
+    val grades by viewModel.grades.collectAsStateWithLifecycle()
 
     // Trigger search in real-time on query updates
     LaunchedEffect(searchQuery) {
@@ -144,6 +146,10 @@ fun SearchScreen(
                         // Match unit title if available
                         val parentUnit = allUnits.find { it.id == topic.unit_id }
                         val unitTitleText = parentUnit?.let { "Unit ${it.unit_number}: ${it.title}" } ?: "Unit ID ${topic.unit_id}"
+                        
+                        val subject = allSubjects.find { it.id == parentUnit?.subject_id }
+                        val grade = grades.find { it.id == subject?.grade_id }
+                        val subjectGradeText = if (subject != null && grade != null) "${grade.name} • ${subject.name}" else ""
 
                         Card(
                             modifier = Modifier
@@ -163,6 +169,15 @@ fun SearchScreen(
                                 verticalAlignment = Alignment.CenterVertically
                               ) {
                                 Column(modifier = Modifier.weight(1f)) {
+                                    if (subjectGradeText.isNotEmpty()) {
+                                        Text(
+                                            text = subjectGradeText,
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.secondary,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                        Spacer(modifier = Modifier.height(2.dp))
+                                    }
                                     Text(
                                         text = unitTitleText,
                                         style = MaterialTheme.typography.labelMedium,

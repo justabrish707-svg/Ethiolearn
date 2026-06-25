@@ -1,5 +1,6 @@
 package com.example.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -117,7 +118,7 @@ fun HomeScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp)
+                    .padding(bottom = 8.dp)
                     .clickable { 
                         if (searchQuery.isEmpty()) {
                             onNavigateToSearch()
@@ -138,6 +139,51 @@ fun HomeScreen(
                 singleLine = true,
                 shape = MaterialTheme.shapes.medium
             )
+
+            // Sync Status Indicator
+            val allTopics by viewModel.allTopics.collectAsState()
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                val isSynced = allTopics.size >= 1000
+                val statusText = if (isSynced) "Curriculum Fully Synced" else "Syncing Curriculum..."
+                val statusColor = if (isSynced) Color(0xFF4CAF50) else MaterialTheme.colorScheme.error
+                
+                Surface(
+                    color = statusColor.copy(alpha = 0.1f),
+                    shape = RoundedCornerShape(16.dp),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, statusColor.copy(alpha = 0.5f))
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(8.dp)
+                                .background(statusColor, shape = androidx.compose.foundation.shape.CircleShape)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = statusText,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = statusColor,
+                            fontWeight = FontWeight.Bold
+                        )
+                        if (isSynced) {
+                            Text(
+                                text = " (${allTopics.size} topics)",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = statusColor.copy(alpha = 0.7f)
+                            )
+                        }
+                    }
+                }
+            }
 
             if (searchQuery.trim().isNotEmpty()) {
                 // Search Results UI

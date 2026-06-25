@@ -57,6 +57,25 @@ fun QuizScreen(
     var isAnswerSubmitted by remember { mutableStateOf(false) }
     var quizCompleted by remember { mutableStateOf(false) }
 
+    // Countdown Timer (10 minutes = 600 seconds)
+    var timeLeftSeconds by remember { mutableIntStateOf(600) }
+    var initialTimeSeconds by remember { mutableIntStateOf(600) }
+
+    LaunchedEffect(quizCompleted, isLoading) {
+        if (!quizCompleted && !isLoading) {
+            while (timeLeftSeconds > 0) {
+                kotlinx.coroutines.delay(1000L)
+                timeLeftSeconds--
+            }
+            if (timeLeftSeconds == 0 && !quizCompleted) {
+                // Auto-submit or complete quiz on timeout
+                quizCompleted = true
+                val finalQuizScore = score * 10
+                viewModel.submitQuizScore(topicId, finalQuizScore, 0)
+            }
+        }
+    }
+
     LaunchedEffect(topicId) {
         isLoading = true
         // Fetch topic details
@@ -198,7 +217,26 @@ fun QuizScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                val minutesUsed = (initialTimeSeconds - timeLeftSeconds) / 60
+                val secondsUsed = (initialTimeSeconds - timeLeftSeconds) % 60
+                Text(
+                    text = String.format("Time Taken: %02d:%02d", minutesUsed, secondsUsed),
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium
+                )
+                if (timeLeftSeconds > 0) {
+                    val mRem = timeLeftSeconds / 60
+                    val sRem = timeLeftSeconds % 60
+                    Text(
+                        text = String.format("Remaining: %02d:%02d", mRem, sRem),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color(0xFF4CAF50)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
                     onClick = {
@@ -240,18 +278,30 @@ fun QuizScreen(
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Progress Bar
+                    // Progress Bar & Timer
                 Column {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = "Question ${currentIndex + 1} of 10",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Bold
-                        )
+                        Column {
+                            Text(
+                                text = "Question ${currentIndex + 1} of 10",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Bold
+                            )
+                            val minutes = timeLeftSeconds / 60
+                            val seconds = timeLeftSeconds % 60
+                            val timeColor = if (timeLeftSeconds < 60) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                            Text(
+                                text = String.format("Time: %02d:%02d", minutes, seconds),
+                                style = MaterialTheme.typography.labelMedium,
+                                color = timeColor,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
                         Text(
                             text = "Score: ${score * 10}%",
                             style = MaterialTheme.typography.labelLarge,
@@ -374,7 +424,7 @@ fun QuizScreen(
                                 // Save score inside database Progress table
                                 val finalQuizScore = score * 10
                                 scope.launch {
-                                    viewModel.progressRepository.saveQuizScore(topicId, finalQuizScore)
+                                    viewModel.submitQuizScore(topicId, finalQuizScore, timeLeftSeconds)
                                     quizCompleted = true
                                 }
                             }

@@ -264,9 +264,9 @@ class MainViewModel(private val repository: AppRepository) : ViewModel() {
         }
     }
 
-    fun submitQuizScore(topicId: Int, score: Int) {
+    fun submitQuizScore(topicId: Int, score: Int, remainingTimeSeconds: Int) {
         viewModelScope.launch {
-            repository.saveQuizScore(topicId, score)
+            repository.saveQuizScore(topicId, score, remainingTimeSeconds)
         }
     }
 }

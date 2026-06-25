@@ -1,6 +1,6 @@
 {
   "name": "EthioLearn",
-  "description": "Offline-first educational app for Ethiopian students.",
+  "description": "A comprehensive learning platform for the Ethiopian curriculum (Grades 9-12), featuring offline access to lessons, practice questions, and progress tracking.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

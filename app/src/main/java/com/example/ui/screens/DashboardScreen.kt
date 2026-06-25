@@ -13,6 +13,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AssignmentTurnedIn
 import androidx.compose.material.icons.filled.Percent
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -30,6 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.data.model.Progress
 import com.example.data.model.Topic
 import com.example.data.model.UnitTable
+import com.example.data.model.Subject
 import com.example.ui.viewmodels.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,6 +44,7 @@ fun DashboardScreen(
     val allProgress by viewModel.allProgress.collectAsStateWithLifecycle()
     val allUnits by viewModel.allUnits.collectAsStateWithLifecycle()
     val allTopics by viewModel.allTopics.collectAsStateWithLifecycle()
+    val allSubjects by viewModel.allSubjects.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.loadAllProgress()
@@ -54,6 +57,9 @@ fun DashboardScreen(
 
     val quizScores = allProgress.filter { it.quiz_score > 0 }.map { it.quiz_score }
     val avgQuizScore = if (quizScores.isNotEmpty()) quizScores.average().toInt() else 0
+
+    val timeRemainingList = allProgress.filter { it.quiz_score > 0 }.map { it.last_quiz_remaining_time_seconds }
+    val avgTimeRemaining = if (timeRemainingList.isNotEmpty()) timeRemainingList.average().toInt() else 0
 
     Scaffold(
         topBar = {
@@ -98,8 +104,51 @@ fun DashboardScreen(
                     completedCount = completedCount,
                     totalTopicsCount = totalTopicsCount,
                     completionPercent = overallCompletionPercent,
-                    avgQuizScore = avgQuizScore
+                    avgQuizScore = avgQuizScore,
+                    avgTimeRemaining = avgTimeRemaining
                 )
+            }
+
+            item {
+                Text(
+                    text = "Grade Level Progress",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        listOf(9, 10, 11, 12).forEach { gradeId ->
+                            val gradeSubjects: List<Subject> = allSubjects.filter { it.grade_id == gradeId }
+                            val gradeTopics: List<Topic> = allTopics.filter { topic: Topic -> 
+                                gradeSubjects.any { sub: Subject -> 
+                                    allUnits.find { u: UnitTable -> u.id == topic.unit_id }?.subject_id == sub.id 
+                                }
+                            }
+                            
+                            val gradeTotal = gradeTopics.size
+                            val gradeCompleted = gradeTopics.count { topic: Topic ->
+                                allProgress.any { p: Progress -> p.topic_id == topic.id && p.completed_lessons }
+                            }
+                            val gradePercent = if (gradeTotal > 0) (gradeCompleted.toFloat() / gradeTotal * 100).toInt() else 0
+                            
+                            GradeProgressRow(
+                                gradeName = "Grade $gradeId",
+                                percentage = gradePercent,
+                                completed = gradeCompleted,
+                                total = gradeTotal
+                            )
+                        }
+                    }
+                }
             }
 
             item {
@@ -159,7 +208,8 @@ fun OverallStatsCard(
     completedCount: Int,
     totalTopicsCount: Int,
     completionPercent: Int,
-    avgQuizScore: Int
+    avgQuizScore: Int,
+    avgTimeRemaining: Int
 ) {
     Card(
         modifier = Modifier
@@ -212,6 +262,15 @@ fun OverallStatsCard(
                         value = if (avgQuizScore > 0) "$avgQuizScore%" else "N/A",
                         label = "Quiz Avg",
                         tint = Color(0xFFFFB300)
+                    )
+                    
+                    val mins = avgTimeRemaining / 60
+                    val secs = avgTimeRemaining % 60
+                    StatMetric(
+                        icon = Icons.Default.AccessTime,
+                        value = if (avgTimeRemaining > 0) String.format("%01d:%02d", mins, secs) else "N/A",
+                        label = "Avg Time",
+                        tint = Color(0xFF673AB7)
                     )
                 }
 
@@ -397,6 +456,43 @@ fun UnitProgressCard(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun GradeProgressRow(
+    gradeName: String,
+    percentage: Int,
+    completed: Int,
+    total: Int
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = gradeName,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "$percentage% ($completed/$total)",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        Spacer(modifier = Modifier.height(4.dp))
+        LinearProgressIndicator(
+            progress = { percentage.toFloat() / 100f },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(8.dp)
+                .clip(RoundedCornerShape(4.dp)),
+            color = MaterialTheme.colorScheme.primary,
+            trackColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
+        )
     }
 }
 

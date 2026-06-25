@@ -166,6 +166,7 @@ data class Progress(
     val topic_id: Int,
     val completed_lessons: Boolean = false,
     val quiz_score: Int = 0,
+    val last_quiz_remaining_time_seconds: Int = 0,
     val timestamp: Long = System.currentTimeMillis()
 )
 
