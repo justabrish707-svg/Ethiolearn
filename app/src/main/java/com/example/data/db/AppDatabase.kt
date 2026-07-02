@@ -22,7 +22,7 @@ import com.example.data.model.*
         ExamSession::class,
         StudentProfile::class
     ],
-    version = 7,
+    version = 8,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

@@ -44,6 +44,9 @@ class MainActivity : ComponentActivity() {
                                 onNavigateToGrade = { gradeId ->
                                     navController.navigate("subjects/$gradeId")
                                 },
+                                onNavigateToUnits = { subjectId ->
+                                    navController.navigate("units/$subjectId")
+                                },
                                 onNavigateToLesson = { topicId ->
                                     navController.navigate("lesson/$topicId")
                                 },

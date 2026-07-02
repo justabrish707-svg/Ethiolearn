@@ -11,6 +11,9 @@ import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Wifi
+import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,6 +24,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.text.style.TextAlign
 import com.example.ui.viewmodels.MainViewModel
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.launch
 
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Info
@@ -31,6 +41,7 @@ import androidx.compose.ui.platform.testTag
 fun HomeScreen(
     viewModel: MainViewModel, 
     onNavigateToGrade: (Int) -> Unit,
+    onNavigateToUnits: ((Int) -> Unit)? = null,
     onNavigateToLesson: (Int) -> Unit,
     onNavigateToDashboard: () -> Unit,
     onNavigateToSearch: () -> Unit,
@@ -38,6 +49,8 @@ fun HomeScreen(
 ) {
     val grades by viewModel.grades.collectAsState()
     val allSubjects by viewModel.allSubjects.collectAsState()
+    val allUnits by viewModel.allUnits.collectAsState()
+    val allTopics by viewModel.allTopics.collectAsState()
     val allProgress by viewModel.allProgress.collectAsState()
     val searchResults by viewModel.searchResults.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
@@ -49,24 +62,104 @@ fun HomeScreen(
         if (nonZeroScores.isNotEmpty()) nonZeroScores.average().toInt() else 0
     } else 0
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("EthioLearn", fontWeight = FontWeight.Bold) },
-                actions = {
-                    IconButton(
-                        onClick = onNavigateToSearch,
-                        modifier = Modifier.testTag("home_search_action_button")
-                    ) {
-                        Icon(imageVector = Icons.Default.Search, contentDescription = "Search Curriculum")
-                    }
-                    IconButton(
-                        onClick = { showAuditDialog = true },
-                        modifier = Modifier.testTag("home_audit_action_button")
-                    ) {
-                        Icon(imageVector = Icons.Default.BugReport, contentDescription = "App Info & Audit Check")
-                    }
-                },
+    var selectedTabIndex by remember { mutableIntStateOf(0) }
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
+    val context = LocalContext.current
+    var isOnline by remember { mutableStateOf(true) }
+    
+    LaunchedEffect(context) {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkCallback = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) { isOnline = true }
+            override fun onLost(network: Network) { isOnline = false }
+        }
+        val networkRequest = NetworkRequest.Builder()
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .build()
+        connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
+        
+        val activeNetwork = connectivityManager.activeNetwork
+        val caps = connectivityManager.getNetworkCapabilities(activeNetwork)
+        isOnline = caps?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+    }
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                Spacer(Modifier.height(16.dp))
+                Text(
+                    "Grade Selection",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(16.dp)
+                )
+                Divider()
+                grades.forEachIndexed { index, grade ->
+                    NavigationDrawerItem(
+                        label = { Text(grade.name) },
+                        selected = selectedTabIndex == index,
+                        onClick = {
+                            selectedTabIndex = index
+                            scope.launch { drawerState.close() }
+                        },
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                        icon = { Icon(Icons.Default.School, contentDescription = null) }
+                    )
+                }
+            }
+        }
+    ) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("EthioLearn", fontWeight = FontWeight.Bold) },
+                    navigationIcon = {
+                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                            Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu")
+                        }
+                    },
+                    actions = {
+                        // Offline/Online Badge
+                        Surface(
+                            color = if (isOnline) Color(0xFF4CAF50).copy(alpha = 0.1f) else MaterialTheme.colorScheme.error.copy(alpha = 0.1f),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.padding(end = 8.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            ) {
+                                Icon(
+                                    imageVector = if (isOnline) Icons.Default.Wifi else Icons.Default.WifiOff,
+                                    contentDescription = if (isOnline) "Online" else "Offline",
+                                    tint = if (isOnline) Color(0xFF4CAF50) else MaterialTheme.colorScheme.error,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = if (isOnline) "Online" else "Offline",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = if (isOnline) Color(0xFF4CAF50) else MaterialTheme.colorScheme.error,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                        IconButton(
+                            onClick = onNavigateToSearch,
+                            modifier = Modifier.testTag("home_search_action_button")
+                        ) {
+                            Icon(imageVector = Icons.Default.Search, contentDescription = "Search Curriculum")
+                        }
+                        IconButton(
+                            onClick = { showAuditDialog = true },
+                            modifier = Modifier.testTag("home_audit_action_button")
+                        ) {
+                            Icon(imageVector = Icons.Default.BugReport, contentDescription = "App Info & Audit Check")
+                        }
+                    },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -160,7 +253,6 @@ fun HomeScreen(
             )
 
             // Sync Status Indicator
-            val allTopics by viewModel.allTopics.collectAsState()
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -279,119 +371,120 @@ fun HomeScreen(
                 }
             } else {
                 // Normal Grade Selection UI
-                Text(
-                    "Select Your Grade",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 16.dp).align(Alignment.Start)
-                )
-                
                 if (grades.isEmpty()) {
                     Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
                     }
                 } else {
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        modifier = Modifier.fillMaxWidth().weight(1f)
-                    ) {
-                        items(grades) { grade ->
-                            val gradeSubjects = allSubjects.filter { it.grade_id == grade.id }
+                    val selectedGrade = grades.getOrNull(selectedTabIndex)
+
+                    // Calculate progress for the selected grade
+                    val gradeProgress = remember(selectedGrade, allSubjects, allUnits, allTopics, allProgress) {
+                        if (selectedGrade == null) return@remember 0
+                        val gradeSubjects = allSubjects.filter { it.grade_id == selectedGrade.id }
+                        val gradeUnits = allUnits.filter { unit -> gradeSubjects.any { it.id == unit.subject_id } }
+                        val gradeTopics = allTopics.filter { topic -> gradeUnits.any { it.id == topic.unit_id } }
+                        val gradeTopicIds = gradeTopics.map { it.id }.toSet()
+                        
+                        val gradeProgressList = allProgress.filter { it.topic_id in gradeTopicIds }
+                        val completedGradeTopics = gradeProgressList.count { it.status == "COMPLETED" || it.completed_lessons }
+                        val totalGradeTopics = gradeTopics.size
+                        
+                        if (totalGradeTopics > 0) (completedGradeTopics.toFloat() / totalGradeTopics * 100).toInt() else 0
+                    }
+
+                    Column(modifier = Modifier.fillMaxWidth().weight(1f)) {
+                        ScrollableTabRow(
+                            selectedTabIndex = selectedTabIndex,
+                            edgePadding = 8.dp,
+                            containerColor = Color.Transparent,
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+                        ) {
+                            grades.forEachIndexed { index, grade ->
+                                Tab(
+                                    selected = selectedTabIndex == index,
+                                    onClick = { selectedTabIndex = index },
+                                    text = { Text(grade.name, fontWeight = FontWeight.Bold) }
+                                )
+                            }
+                        }
+
+                        // Progress Tracking UI Element for Selected Grade
+                        if (selectedGrade != null) {
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable { onNavigateToGrade(grade.id) }
-                                    .testTag("grade_card_${grade.id}"),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                                )
+                                    .padding(bottom = 16.dp),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
                             ) {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp)
-                                ) {
+                                Column(modifier = Modifier.padding(16.dp)) {
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Icon(
-                                            imageVector = Icons.Default.School, 
-                                            contentDescription = "Grade Icon",
-                                            tint = MaterialTheme.colorScheme.primary,
-                                            modifier = Modifier.size(36.dp)
+                                        Text(
+                                            text = "${selectedGrade.name} Progress",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold
                                         )
-                                        Spacer(modifier = Modifier.width(12.dp))
-                                        Column {
-                                            Text(
-                                                text = grade.name,
-                                                style = MaterialTheme.typography.titleLarge,
-                                                fontWeight = FontWeight.Bold
-                                            )
-                                            Text(
-                                                text = "${gradeSubjects.size} Subjects available",
-                                                style = MaterialTheme.typography.bodyMedium,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                                            )
-                                        }
+                                        Text(
+                                            text = "$gradeProgress%",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.primary
+                                        )
                                     }
-                                    
-                                    if (gradeSubjects.isNotEmpty()) {
-                                        Spacer(modifier = Modifier.height(12.dp))
-                                        
-                                        // Scrollable or wrapping row-like representation of Subject Chips
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                        ) {
-                                            // Show up to 3 subjects, then +X more
-                                            val visibleSubjects = gradeSubjects.take(3)
-                                            visibleSubjects.forEach { sub ->
-                                                Surface(
-                                                    color = MaterialTheme.colorScheme.secondaryContainer,
-                                                    shape = RoundedCornerShape(12.dp),
-                                                    modifier = Modifier.padding(vertical = 2.dp)
-                                                ) {
-                                                    Text(
-                                                        text = sub.name,
-                                                        style = MaterialTheme.typography.labelSmall,
-                                                        fontWeight = FontWeight.Medium,
-                                                        color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                                                    )
-                                                }
-                                            }
-                                            if (gradeSubjects.size > 3) {
-                                                Surface(
-                                                    color = MaterialTheme.colorScheme.primaryContainer,
-                                                    shape = RoundedCornerShape(12.dp),
-                                                    modifier = Modifier.padding(vertical = 2.dp)
-                                                ) {
-                                                    Text(
-                                                        text = "+${gradeSubjects.size - 3} more",
-                                                        style = MaterialTheme.typography.labelSmall,
-                                                        fontWeight = FontWeight.Bold,
-                                                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    }
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    LinearProgressIndicator(
+                                        progress = { gradeProgress / 100f },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(8.dp),
+                                        color = MaterialTheme.colorScheme.primary,
+                                        trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+                                    )
                                 }
                             }
+
+                            val gradeSubjects = allSubjects.filter { it.grade_id == selectedGrade.id }
+                            
+                            var selectedCategory by remember { mutableStateOf<String?>("All") }
+                            val categories = listOf("All") + gradeSubjects.map { it.name }.distinct().sorted()
+
+                            ScrollableTabRow(
+                                selectedTabIndex = categories.indexOf(selectedCategory).takeIf { it >= 0 } ?: 0,
+                                edgePadding = 8.dp,
+                                containerColor = Color.Transparent,
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                            ) {
+                                categories.forEachIndexed { index, category ->
+                                    Tab(
+                                        selected = selectedCategory == category,
+                                        onClick = { selectedCategory = category },
+                                        text = { Text(category, style = MaterialTheme.typography.labelMedium) }
+                                    )
+                                }
+                            }
+
+                            val filteredSubjects = if (selectedCategory == "All") gradeSubjects else gradeSubjects.filter { it.name == selectedCategory }
+
+                            com.example.ui.components.SubjectSelection(
+                                subjects = filteredSubjects,
+                                onSubjectSelected = { subjectId ->
+                                    onNavigateToUnits?.invoke(subjectId) ?: onNavigateToGrade(selectedGrade.id)
+                                },
+                                modifier = Modifier.weight(1f)
+                            )
                         }
                     }
                 }
             }
         }
     }
+    }
 
     if (showAuditDialog) {
-        val allUnits by viewModel.allUnits.collectAsState()
-        val allTopics by viewModel.allTopics.collectAsState()
-        val allSubjects by viewModel.allSubjects.collectAsState()
-        
         CurriculumAuditDialog(
             gradeCount = grades.size,
             subjectCount = allSubjects.size,
